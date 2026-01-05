@@ -1,7 +1,7 @@
-import Link from "next/link"
-import { Home, Search, AlertCircle } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import Link from "next/link";
+import { Home, Search, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function NotFound() {
   return (
@@ -19,11 +19,13 @@ export default function NotFound() {
             </div>
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-balance">Listing Not Found</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-balance">
+            Listing Not Found
+          </h1>
 
           <p className="text-lg text-muted-foreground mb-8 text-pretty max-w-md mx-auto">
-            This housing listing doesn't exist or has been removed. The property might have been rented or the landlord
-            withdrew it.
+            This housing listing doesn't exist or has been removed. The property
+            might have been rented or the landlord withdrew it.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -34,7 +36,12 @@ export default function NotFound() {
               </Link>
             </Button>
 
-            <Button size="lg" variant="outline" asChild className="bg-transparent">
+            <Button
+              size="lg"
+              variant="outline"
+              asChild
+              className="bg-transparent"
+            >
               <Link href="/">
                 <Home className="mr-2 h-5 w-5" />
                 Go Home
@@ -43,17 +50,28 @@ export default function NotFound() {
           </div>
 
           <div className="mt-12 pt-8 border-t border-border">
-            <p className="text-sm text-muted-foreground mb-3">Looking for something specific?</p>
+            <p className="text-sm text-muted-foreground mb-3">
+              Looking for something specific?
+            </p>
             <div className="flex flex-wrap gap-2 justify-center">
-              <Link href="/dashboard" className="text-sm text-primary hover:underline">
+              <Link
+                href="/dashboard"
+                className="text-sm text-primary hover:underline"
+              >
                 My Dashboard
               </Link>
               <span className="text-muted-foreground">•</span>
-              <Link href="/manage-listings" className="text-sm text-primary hover:underline">
+              <Link
+                href="/manage-listings"
+                className="text-sm text-primary hover:underline"
+              >
                 Manage Listings
               </Link>
               <span className="text-muted-foreground">•</span>
-              <Link href="/#how-it-works" className="text-sm text-primary hover:underline">
+              <Link
+                href="/#how-it-works"
+                className="text-sm text-primary hover:underline"
+              >
                 How It Works
               </Link>
             </div>
@@ -61,5 +79,5 @@ export default function NotFound() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

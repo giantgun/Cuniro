@@ -1,12 +1,13 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Navbar } from "@/components/navbar"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { EscrowCard, Escrow } from "@/components/escrow-card"
-import { useContract } from "@/hooks/use-contract"
-import { useWallet } from "@/hooks/use-wallet"
-import { set } from "react-hook-form"
+import { useState, useEffect } from "react";
+import { Navbar } from "@/components/navbar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { EscrowCard, Escrow } from "@/components/escrow-card";
+import { useContract } from "@/hooks/use-contract";
+import { useWallet } from "@/hooks/use-wallet";
+import { Spinner } from "@/components/ui/spinner";
+import { useToast } from "@/hooks/use-toast";
 
 // Mock escrow data - would come from blockchain in production
 const mockEscrows = [
@@ -40,7 +41,8 @@ const mockEscrows = [
     createdAt: "2025-01-20",
     timeout: 7,
     daysLeft: 5,
-    terms: "Security deposit required. Move-in date: Feb 1, 2025. Shared kitchen and living room.",
+    terms:
+      "Security deposit required. Move-in date: Feb 1, 2025. Shared kitchen and living room.",
     listingId: 2,
   },
   {
@@ -56,7 +58,8 @@ const mockEscrows = [
     createdAt: "2024-12-01",
     timeout: 14,
     daysLeft: 0,
-    terms: "First and last month rent. Move-in date: Dec 15, 2024. Shared facilities with 3 other students.",
+    terms:
+      "First and last month rent. Move-in date: Dec 15, 2024. Shared facilities with 3 other students.",
     listingId: 2,
   },
   {
@@ -72,7 +75,8 @@ const mockEscrows = [
     createdAt: "2025-01-18",
     timeout: 30,
     daysLeft: 28,
-    terms: "Premium apartment with parking. Move-in date: Feb 15, 2025. 24/7 security included.",
+    terms:
+      "Premium apartment with parking. Move-in date: Feb 15, 2025. 24/7 security included.",
     listingId: 4,
   },
   {
@@ -88,8 +92,10 @@ const mockEscrows = [
     createdAt: "2025-01-10",
     timeout: 14,
     daysLeft: 8,
-    terms: "Studio apartment with desk. Move-in date: Jan 25, 2025. Utilities included.",
-    disputeReason: "Apartment condition does not match listing photos. WiFi not working as promised.",
+    terms:
+      "Studio apartment with desk. Move-in date: Jan 25, 2025. Utilities included.",
+    disputeReason:
+      "Apartment condition does not match listing photos. WiFi not working as promised.",
     listingId: 5,
   },
   {
@@ -105,39 +111,118 @@ const mockEscrows = [
     createdAt: "2025-01-22",
     timeout: 14,
     daysLeft: 11,
-    terms: "Large room in shared house. Move-in date: Feb 5, 2025. Pet-friendly with garden access.",
+    terms:
+      "Large room in shared house. Move-in date: Feb 5, 2025. Pet-friendly with garden access.",
     listingId: 6,
   },
-]
+];
 
 export default function DashboardPage() {
-  const [activeTab, setActiveTab] = useState("buyer")
-  const [data, setData] = useState<any[] | null>([])
-  const { account, userId } = useWallet()
+  const [activeTab, setActiveTab] = useState("buyer");
+  const [data, setData] = useState<any[] | null>([]);
+  const { account, userId } = useWallet();
+  const [isLoading, setIsLoading] = useState(false);
+  const [reloadFlag, setReloadFlag] = useState(false);
+  const { toast } = useToast();
 
-  const buyerEscrows = [...(data ?? []).filter((escrow) => escrow.buyer_address.toLowerCase() === account)
-  .map((escrow) => ({ ...escrow, role: "buyer" }))]
-  const sellerEscrows = [...(data ?? []).filter((escrow) => escrow.seller_address.toLowerCase() === account)
-  .map((escrow) => ({ ...escrow, role: "seller" }))]
-  const arbiterEscrows = [...(data ?? []).filter((escrow) => escrow.arbiter_address.toLowerCase() === account)
-  .map((escrow) => ({ ...escrow, role: "arbiter" }))]
-  const { getAllUserEscrows } = useContract()
+  const calculateProgress = (escrow: Escrow) => {
+    const createdAtSeconds = new Date(escrow.created_at).getTime() / 1000;
+    const nowSeconds = Date.now() / 1000;
+
+    const elapsed = nowSeconds - createdAtSeconds;
+    const totalDuration = escrow.timeout;
+
+    // Calculate percentage
+    let percentage = (elapsed / totalDuration) * 100;
+
+    // Final progress value
+    return Math.min(Math.max(percentage, 0), 100);
+  };
+
+  const buyerEscrows = [
+    ...(data ?? [])
+      .filter((escrow) => escrow.buyer_address.toLowerCase() === account)
+      .map((escrow) => ({ ...escrow, role: "buyer" })),
+  ].sort((e1, e2) => {
+    if (
+      (e1.status === "pending" || e1.status === "disputed") &&
+      !(e2.status === "pending" || e2.status === "disputed")
+    )
+      return -1; // 'a' passes, moves up
+    if (
+      !(e1.status === "pending" || e1.status === "disputed") &&
+      (e2.status === "pending" || e2.status === "disputed")
+    )
+      return 1; // 'b' passes, moves up
+    return 0; // same condition, no change
+  });
+  const sellerEscrows = [
+    ...(data ?? [])
+      .filter((escrow) => escrow.seller_address.toLowerCase() === account)
+      .map((escrow) => ({ ...escrow, role: "seller" })),
+  ].sort((e1, e2) => {
+    if (
+      calculateProgress(e1) === 100 &&
+      e1.status === "pending" &&
+      !(calculateProgress(e2) === 100 && e2.status === "pending")
+    )
+      return -1; // 'a' passes, moves up
+    if (
+      !(calculateProgress(e1) === 100 && e1.status === "pending") &&
+      calculateProgress(e2) === 100 &&
+      e2.status === "pending"
+    )
+      return 1; // 'b' passes, moves up
+    return 0; // same condition, no change
+  });
+  const arbiterEscrows = [
+    ...(data ?? [])
+      .filter((escrow) => escrow.arbiter_address.toLowerCase() === account)
+      .map((escrow) => ({ ...escrow, role: "arbiter" })),
+  ].sort((e1, e2) => {
+    if (e1.status === "disputed" && !(e2.status === "disputed")) return -1; // 'a' passes, moves up
+    if (!(e1.status === "disputed") && e2.status === "disputed") return 1; // 'b' passes, moves up
+    return 0; // same condition, no change
+  });
+  const buyerNotifications = buyerEscrows.filter(
+    (escrow: Escrow) => escrow.status === "pending",
+  ).length;
+  const sellerNotifications =
+    sellerEscrows.filter(
+      (escrow: Escrow) =>
+        calculateProgress(escrow) === 100 && escrow.status === "pending",
+    ).length || 0;
+  const arbiterNotifications = arbiterEscrows.filter(
+    (escrow: Escrow) => escrow.status === "disputed",
+  ).length;
+  const { getAllUserEscrows } = useContract();
+
+  const onStateChange = async () => {
+    setReloadFlag(!reloadFlag);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await getAllUserEscrows()
-        console.log("Result:", result);
-        setData(result)
+        setIsLoading(true);
+        const result = await getAllUserEscrows();
+        setData(result);
       } catch (error) {
         console.error("Error fetching data:", error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to fetch escrows. Please try again later.",
+        });
+      } finally {
+        setIsLoading(false);
       }
-    }
+    };
 
     if (account != null) {
-      fetchData()
+      fetchData();
     }
-  }, [account, userId])
+  }, [account, userId, reloadFlag]);
 
   return (
     <div className="min-h-screen">
@@ -145,92 +230,138 @@ export default function DashboardPage() {
 
       <div className="pt-24 pb-20 px-4">
         <div className="container mx-auto max-w-7xl">
-          <div className="mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Escrow Dashboard</h1>
-            <p className="text-xl text-muted-foreground">Manage your escrows, track status, and take actions</p>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">
+                Escrow Dashboard
+              </h1>
+              <p className="text-muted-foreground mt-1">
+                Manage your escrows, track status, and take actions
+              </p>
+            </div>
           </div>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full max-w-md grid-cols-3 mb-8">
-              <TabsTrigger value="buyer" className="relative">
-                My Escrows
-                {buyerEscrows.length > 0 && (
-                  <span className="ml-2 text-xs bg-primary text-primary-foreground rounded-full px-2 py-0.5">
-                    {buyerEscrows.length}
-                  </span>
-                )}
-              </TabsTrigger>
-              <TabsTrigger value="seller" className="relative">
-                As Seller
-                {sellerEscrows.length > 0 && (
-                  <span className="ml-2 text-xs bg-primary text-primary-foreground rounded-full px-2 py-0.5">
-                    {sellerEscrows.length}
-                  </span>
-                )}
-              </TabsTrigger>
-              <TabsTrigger value="arbiter" className="relative">
-                As Arbiter
-                {arbiterEscrows.length > 0 && (
-                  <span className="ml-2 text-xs bg-primary text-primary-foreground rounded-full px-2 py-0.5">
-                    {arbiterEscrows.length}
-                  </span>
-                )}
-              </TabsTrigger>
-            </TabsList>
+          {!account && !isLoading && (
+            <div className="text-center py-12 border border-dashed border-border rounded-lg">
+              <p className="text-muted-foreground">
+                Connect your wallet to manage your escrows.
+              </p>
+            </div>
+          )}
 
-            <TabsContent value="buyer" className="space-y-6">
-              <div className="mb-4">
-                <p className="text-muted-foreground">Escrows where you are the tenant (buyer)</p>
-              </div>
-              {buyerEscrows.length > 0 ? (
-                <div className="grid lg:grid-cols-2 gap-6">
-                  {buyerEscrows.map((escrow) => (
-                    <EscrowCard key={escrow.id} escrow={escrow} />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12 border border-dashed border-border rounded-lg">
-                  <p className="text-muted-foreground">No escrows found as buyer</p>
-                </div>
-              )}
-            </TabsContent>
+          {account && !isLoading && (
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="w-full"
+            >
+              <TabsList className="grid w-full max-w-md grid-cols-3 mb-8">
+                <TabsTrigger value="buyer" className="relative">
+                  My Escrows
+                  {buyerNotifications > 0 && (
+                    <span className="ml-2 text-xs bg-primary text-primary-foreground rounded-full px-2 py-0.5">
+                      {buyerNotifications > 0 && buyerNotifications}
+                    </span>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger value="seller" className="relative">
+                  As Seller
+                  {sellerNotifications > 0 && (
+                    <span className="ml-2 text-xs bg-primary text-primary-foreground rounded-full px-2 py-0.5">
+                      {sellerNotifications > 0 && sellerNotifications}
+                    </span>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger value="arbiter" className="relative">
+                  As Arbiter
+                  {arbiterNotifications > 0 && (
+                    <span className="ml-2 text-xs bg-primary text-primary-foreground rounded-full px-2 py-0.5">
+                      {arbiterNotifications > 0 && arbiterNotifications}
+                    </span>
+                  )}
+                </TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="seller" className="space-y-6">
-              <div className="mb-4">
-                <p className="text-muted-foreground">Escrows where you are the landlord (seller)</p>
-              </div>
-              {sellerEscrows.length > 0 ? (
-                <div className="grid lg:grid-cols-2 gap-6">
-                  {sellerEscrows.map((escrow) => (
-                    <EscrowCard key={escrow.id} escrow={escrow} />
-                  ))}
+              <TabsContent value="buyer" className="space-y-6">
+                <div className="mb-4">
+                  <p className="text-muted-foreground">
+                    Escrows where you are the tenant (buyer)
+                  </p>
                 </div>
-              ) : (
-                <div className="text-center py-12 border border-dashed border-border rounded-lg">
-                  <p className="text-muted-foreground">No escrows found as seller</p>
-                </div>
-              )}
-            </TabsContent>
+                {buyerEscrows.length > 0 ? (
+                  <div className="grid lg:grid-cols-2 gap-6">
+                    {buyerEscrows.map((escrow) => (
+                      <EscrowCard
+                        onStateChange={onStateChange}
+                        key={escrow.id}
+                        escrow={escrow}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 border border-dashed border-border rounded-lg">
+                    <p className="text-muted-foreground">
+                      You do not have any escrows as a potential tenant
+                    </p>
+                  </div>
+                )}
+              </TabsContent>
 
-            <TabsContent value="arbiter" className="space-y-6">
-              <div className="mb-4">
-                <p className="text-muted-foreground">Escrows where you are the neutral arbiter</p>
-              </div>
-              {arbiterEscrows.length > 0 ? (
-                <div className="grid lg:grid-cols-2 gap-6">
-                  {arbiterEscrows.map((escrow) => (
-                    <EscrowCard key={escrow.id} escrow={escrow} />
-                  ))}
+              <TabsContent value="seller" className="space-y-6">
+                <div className="mb-4">
+                  <p className="text-muted-foreground">
+                    Escrows where you are the landlord (seller)
+                  </p>
                 </div>
-              ) : (
-                <div className="text-center py-12 border border-dashed border-border rounded-lg">
-                  <p className="text-muted-foreground">No escrows found as arbiter</p>
+                {sellerEscrows.length > 0 ? (
+                  <div className="grid lg:grid-cols-2 gap-6">
+                    {sellerEscrows.map((escrow) => (
+                      <EscrowCard
+                        onStateChange={onStateChange}
+                        key={escrow.id}
+                        escrow={escrow}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 border border-dashed border-border rounded-lg">
+                    <p className="text-muted-foreground">
+                      You do not have any escrows as a landlord or agent
+                    </p>
+                  </div>
+                )}
+              </TabsContent>
+
+              <TabsContent value="arbiter" className="space-y-6">
+                <div className="mb-4">
+                  <p className="text-muted-foreground">
+                    Escrows where you are the neutral arbiter
+                  </p>
                 </div>
-              )}
-            </TabsContent>
-          </Tabs>
+                {arbiterEscrows.length > 0 ? (
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {arbiterEscrows.map((escrow) => (
+                      <EscrowCard
+                        onStateChange={onStateChange}
+                        key={escrow.id}
+                        escrow={escrow}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 border border-dashed border-border rounded-lg">
+                    <p className="text-muted-foreground">
+                      You do not have any escrows as an arbiter
+                    </p>
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
+          )}
+
+          {isLoading && <Spinner size="lg" className="mx-auto my-4" />}
         </div>
       </div>
     </div>
-  )
+  );
 }

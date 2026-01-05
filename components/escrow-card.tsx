@@ -1,11 +1,24 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Clock, AlertCircle, CheckCircle, XCircle, User, Scale, ExternalLink } from "lucide-react"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
+import { useState } from "react";
+import {
+  Clock,
+  AlertCircle,
+  CheckCircle,
+  XCircle,
+  User,
+  Scale,
+  ExternalLink,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import {
   Dialog,
   DialogContent,
@@ -13,81 +26,164 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { useToast } from "@/hooks/use-toast"
-import { useContract } from "@/hooks/use-contract"
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { useContract } from "@/hooks/use-contract";
+import { Spinner } from "./ui/spinner";
+import { ConfirmReceiptModal } from "./confirm-reciept-modal";
 
 export interface Escrow {
-  id: string
-  listing_title: string
-  amount: string
-  status: "active" | "pending" | "completed" | "disputed" | "refunded"
-  role: "buyer" | "seller" | "arbiter"
-  seller_address: string
-  buyer_address: string
-  arbiter_address: string
-  arbiter_name: string
-  created_at: string
-  timeout: number
-  daysLeft: number
-  terms: string
-  dispute_reason?: string
-  listing_id: number
+  id: string;
+  listing_title: string;
+  amount: string;
+  status: "active" | "pending" | "completed" | "disputed" | "refunded";
+  role: "buyer" | "seller" | "arbiter";
+  seller_address: string;
+  buyer_address: string;
+  arbiter_address: string;
+  arbiter_name: string;
+  created_at: string;
+  timeout: number;
+  daysLeft: number;
+  terms: string;
+  dispute_reason?: string;
+  listing_id: number;
 }
 
 interface EscrowCardProps {
-  escrow: Escrow
+  escrow: Escrow;
+  onStateChange: () => void;
 }
 
-export function EscrowCard({ escrow }: EscrowCardProps) {
-  const [showDetails, setShowDetails] = useState(false)
-  const [showDispute, setShowDispute] = useState(false)
-  const [showResolve, setShowResolve] = useState(false)
-  const [disputeReason, setDisputeReason] = useState("")
-  const [resolutionNote, setResolutionNote] = useState("")
-  const { confirmReceipt, raiseDispute, resolveDispute, recieveFunds, isLoading } = useContract()
+export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
+  const [showDetails, setShowDetails] = useState(false);
+  const [showDispute, setShowDispute] = useState(false);
+  const [showResolve, setShowResolve] = useState(false);
+  const [disputeReason, setDisputeReason] = useState("");
+  const [resolutionNote, setResolutionNote] = useState("");
+  const {
+    confirmReceipt,
+    raiseDispute,
+    resolveDispute,
+    recieveFunds,
+    isLoading,
+  } = useContract();
+  const created = new Date(escrow.created_at);
+  const timeoutDate = new Date(created.getTime() + escrow.timeout * 1000);
+  const [showConfirmReceipt, setShowConfirmReceipt] = useState(false);
+
+  const handleConfirmReceipt = () => {
+    setShowConfirmReceipt(true);
+  };
 
   const statusConfig = {
-    active: { icon: Clock, color: "text-primary", bg: "bg-primary/10", label: "Active" },
-    pending: { icon: Clock, color: "text-yellow-500", bg: "bg-yellow-500/10", label: "Pending" },
-    completed: { icon: CheckCircle, color: "text-green-500", bg: "bg-green-500/10", label: "Completed" },
-    disputed: { icon: AlertCircle, color: "text-destructive", bg: "bg-destructive/10", label: "Disputed" },
-    refunded: { icon: XCircle, color: "text-muted-foreground", bg: "bg-muted", label: "Refunded" },
-  }
+    active: {
+      icon: Clock,
+      color: "text-primary",
+      bg: "bg-primary/10",
+      label: "Active",
+    },
+    pending: {
+      icon: Clock,
+      color: "text-yellow-500",
+      bg: "bg-yellow-500/10",
+      label: "Pending",
+    },
+    completed: {
+      icon: CheckCircle,
+      color: "text-green-500",
+      bg: "bg-green-500/10",
+      label: "Completed",
+    },
+    disputed: {
+      icon: AlertCircle,
+      color: "text-destructive",
+      bg: "bg-destructive/10",
+      label: "Disputed",
+    },
+    refunded: {
+      icon: XCircle,
+      color: "text-muted-foreground",
+      bg: "bg-muted",
+      label: "Refunded",
+    },
+  };
 
-  const status = statusConfig[escrow.status]
-  const StatusIcon = status.icon
-  const progress = ((escrow.timeout - escrow.daysLeft) / escrow.timeout) * 100
+  const getDaysLeft = (escrow: Escrow) => {
+    const createdAtMs = new Date(escrow.created_at).getTime();
+    const timeoutMs = escrow.timeout * 1000; // Convert timeout seconds to ms
+    const deadline = createdAtMs + timeoutMs;
+
+    const nowMs = Date.now();
+    const remainingMs = deadline - nowMs;
+
+    // Convert milliseconds to days (1000ms * 60s * 60m * 24h)
+    const daysRemaining = remainingMs / (1000 * 60 * 60 * 24);
+
+    // Use Math.max(..., 0) so it doesn't return negative days if expired
+    return Math.max(daysRemaining, 0);
+  };
+
+  const calculateProgress = (escrow: Escrow) => {
+    const createdAtSeconds = new Date(escrow.created_at).getTime() / 1000;
+    const nowSeconds = Date.now() / 1000;
+
+    const elapsed = nowSeconds - createdAtSeconds;
+    const totalDuration = escrow.timeout;
+
+    // Calculate percentage
+    let percentage = (elapsed / totalDuration) * 100;
+
+    // Final progress value
+    return Math.min(Math.max(percentage, 0), 100);
+  };
+
+  const status = statusConfig[escrow.status];
+  const StatusIcon = status.icon;
+  const progress = calculateProgress(escrow);
+  let daysLeft = getDaysLeft(escrow);
+  let minutesLeft = Math.ceil(daysLeft * 24 * 60);
 
   const truncateAddress = (address: string) => {
-    return `${address.slice(0, 6)}...${address.slice(-4)}`
-  }
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
 
   const handleRaiseDispute = async () => {
-    const success = await raiseDispute(Number.parseInt(escrow.id), disputeReason, Number(escrow.listing_id))
+    const success = await raiseDispute(
+      Number.parseInt(escrow.id),
+      disputeReason,
+      Number(escrow.listing_id),
+    );
     if (success) {
-      setShowDispute(false)
-      setDisputeReason("")
+      setShowDispute(false);
+      setDisputeReason("");
+      onStateChange();
     }
-  }
+  };
 
   const handleResolveDispute = async (winner: "buyer" | "seller") => {
-    const success = await resolveDispute(Number.parseInt(escrow.id), (winner === "seller"), Number(escrow.listing_id))
+    const success = await resolveDispute(
+      Number.parseInt(escrow.id),
+      winner === "seller",
+      Number(escrow.listing_id),
+    );
     if (success) {
-      setShowResolve(false)
-      setResolutionNote("")
+      setShowResolve(false);
+      setResolutionNote("");
+      onStateChange();
     }
-  }
+  };
 
   const handleAutoRelease = async () => {
-    await recieveFunds(Number.parseInt(escrow.id), Number(escrow.listing_id))
-  }
+    await recieveFunds(Number.parseInt(escrow.id), Number(escrow.listing_id));
+    onStateChange();
+  };
 
-  const handleConfirmReceipt = async () => {
-    await confirmReceipt(Number.parseInt(escrow.id), Number(escrow.listing_id))
-  }
+  const release = async () => {
+    await confirmReceipt(Number.parseInt(escrow.id), Number(escrow.listing_id));
+    onStateChange();
+  };
 
   return (
     <>
@@ -104,24 +200,44 @@ export function EscrowCard({ escrow }: EscrowCardProps) {
                   {escrow.role}
                 </Badge>
               </div>
-              <h3 className="text-xl font-semibold mb-1">{escrow.listing_title}</h3>
-              <p className="text-sm text-muted-foreground">Escrow ID: {escrow.id}</p>
+              <h3 className="text-xl font-semibold mb-1">
+                {escrow.listing_title}
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Escrow ID: {escrow.id}
+              </p>
             </div>
             <div className="text-right">
-              <div className="text-2xl font-bold text-primary">${escrow.amount} <span className="text-xs">in MNEE</span></div>
-              <div className="text-xs text-muted-foreground">Escrowed Amount</div>
+              <div className="text-2xl font-bold text-primary">
+                ${escrow.amount} <span className="text-xs">in MNEE</span>
+              </div>
+              <div className="text-xs text-muted-foreground">
+                Escrowed Amount
+              </div>
             </div>
           </div>
         </CardHeader>
 
         <CardContent className="space-y-4">
           {/* Countdown */}
-          {escrow.status === "active" && (
+          {escrow.status === "pending" && (
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Time until auto-release</span>
+                <span className="text-muted-foreground">
+                  Time until auto-release
+                </span>
                 <span className="font-medium">
-                  {escrow.daysLeft} {escrow.daysLeft === 1 ? "day" : "days"} left
+                  {daysLeft < 1 ? (
+                    <>
+                      {minutesLeft} {minutesLeft === 1 ? "minute" : "minutes"}{" "}
+                      left
+                    </>
+                  ) : (
+                    <>
+                      {Math.floor(daysLeft)} {daysLeft === 1 ? "day" : "days"}{" "}
+                      left
+                    </>
+                  )}
                 </span>
               </div>
               <Progress value={progress} className="h-2" />
@@ -134,8 +250,12 @@ export function EscrowCard({ escrow }: EscrowCardProps) {
               <div className="flex items-start gap-2">
                 <AlertCircle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium text-destructive mb-1">Dispute Active</p>
-                  <p className="text-xs text-muted-foreground">{escrow.dispute_reason}</p>
+                  <p className="text-sm font-medium text-destructive mb-1">
+                    Dispute Active
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {escrow.dispute_reason}
+                  </p>
                 </div>
               </div>
             </div>
@@ -149,8 +269,15 @@ export function EscrowCard({ escrow }: EscrowCardProps) {
                 <span>Buyer</span>
               </div>
               <div className="flex items-center justify-between">
-                <code className="text-xs bg-secondary px-2 py-1 rounded">{truncateAddress(escrow.buyer_address)}</code>
-                <Button variant="ghost" size="sm" asChild className="h-6 w-6 p-0">
+                <code className="text-xs bg-secondary px-2 py-1 rounded">
+                  {truncateAddress(escrow.buyer_address)}
+                </code>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  asChild
+                  className="h-6 w-6 p-0"
+                >
                   <a
                     href={`https://etherscan.io/address/${escrow.buyer_address}`}
                     target="_blank"
@@ -168,8 +295,15 @@ export function EscrowCard({ escrow }: EscrowCardProps) {
                 <span>Seller</span>
               </div>
               <div className="flex items-center justify-between">
-                <code className="text-xs bg-secondary px-2 py-1 rounded">{truncateAddress(escrow.seller_address)}</code>
-                <Button variant="ghost" size="sm" asChild className="h-6 w-6 p-0">
+                <code className="text-xs bg-secondary px-2 py-1 rounded">
+                  {truncateAddress(escrow.seller_address)}
+                </code>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  asChild
+                  className="h-6 w-6 p-0"
+                >
                   <a
                     href={`https://etherscan.io/address/${escrow.seller_address}`}
                     target="_blank"
@@ -188,46 +322,104 @@ export function EscrowCard({ escrow }: EscrowCardProps) {
               </div>
               <div>
                 <div className="text-xs font-medium">{escrow.arbiter_name}</div>
-                <code className="text-xs text-muted-foreground">{truncateAddress(escrow.arbiter_address)}</code>
+                <code className="text-xs text-muted-foreground">
+                  {truncateAddress(escrow.arbiter_address)}
+                </code>
               </div>
             </div>
           </div>
         </CardContent>
 
-        <CardFooter className="flex flex-wrap gap-2 pt-0">
-          <Button variant="outline" size="sm" onClick={() => setShowDetails(true)} className="bg-transparent">
+        <CardFooter className="grid grid-cols-2 gap-2 pt-0 md:grid-cols-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowDetails(true)}
+            className="bg-transparent text-primary col-span-2 md:col-span-1"
+          >
             View Details
           </Button>
 
           {/* Buyer Actions */}
-          {escrow.role === "buyer" && escrow.status === "active" && (
+          {escrow.role === "buyer" && escrow.status === "pending" && (
             <>
-              <Button size="sm" onClick={handleConfirmReceipt} disabled={isLoading}>
-                {isLoading ? "Processing..." : "Confirm Receipt"}
+              <Button
+                size="sm"
+                onClick={handleConfirmReceipt}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Spinner size="sm" className="text-primary-foreground" />
+                    Processing...
+                  </>
+                ) : (
+                  "Release Funds"
+                )}
               </Button>
-              <Button variant="destructive" size="sm" onClick={() => setShowDispute(true)} disabled={isLoading}>
-                Raise Dispute
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => setShowDispute(true)}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Spinner size="sm" className="text-secondary-foreground" />
+                    Processing...
+                  </>
+                ) : (
+                  "Raise Dispute"
+                )}
               </Button>
             </>
           )}
 
           {/* Seller Actions */}
-          {escrow.role === "seller" && escrow.status === "active" && (
-            <Button size="sm" disabled>
-              Awaiting Buyer Confirmation
-            </Button>
-          )}
+          {escrow.role === "seller" &&
+            escrow.status === "pending" &&
+            progress < 100 && (
+              <Button size="sm" disabled className="col-span-2">
+                Awaiting Confirmation
+              </Button>
+            )}
 
-          {escrow.role === "seller" && escrow.status === "pending" && (
-            <Button size="sm" onClick={handleAutoRelease}>
-              Recieve Funds
-            </Button>
-          )}
+          {escrow.role === "seller" &&
+            progress >= 100 &&
+            escrow.status === "pending" && (
+              <Button
+                size="sm"
+                onClick={handleAutoRelease}
+                disabled={isLoading}
+                className="col-span-2"
+              >
+                {isLoading ? (
+                  <>
+                    <Spinner size="sm" className="text-primary-foreground" />
+                    Processing...
+                  </>
+                ) : (
+                  "Recieve Funds"
+                )}
+              </Button>
+            )}
 
           {/* Arbiter Actions */}
           {escrow.role === "arbiter" && escrow.status === "disputed" && (
-            <Button size="sm" onClick={() => setShowResolve(true)} disabled={isLoading}>
-              Resolve Dispute
+            <Button
+              size="sm"
+              onClick={() => setShowResolve(true)}
+              disabled={isLoading}
+              className="col-span-2"
+            >
+              {isLoading ? (
+                <>
+                  <Spinner size="sm" className="text-primary-foreground" />
+                  Processing...
+                </>
+              ) : (
+                "Resolve Dispute"
+              )}
             </Button>
           )}
         </CardFooter>
@@ -235,7 +427,7 @@ export function EscrowCard({ escrow }: EscrowCardProps) {
 
       {/* Details Dialog */}
       <Dialog open={showDetails} onOpenChange={setShowDetails}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="bg-card border-border mx-auto">
           <DialogHeader>
             <DialogTitle>{escrow.listing_title}</DialogTitle>
             <DialogDescription>Escrow details and terms</DialogDescription>
@@ -243,21 +435,31 @@ export function EscrowCard({ escrow }: EscrowCardProps) {
           <div className="space-y-4">
             <div>
               <h4 className="text-sm font-medium mb-2">Terms & Conditions</h4>
-              <p className="text-sm text-muted-foreground leading-relaxed">{escrow.terms}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {escrow.terms}
+              </p>
             </div>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <span className="text-muted-foreground">Created:</span>{" "}
-                <span className="font-medium">{escrow.created_at}</span>
+                <span className="font-medium">
+                  {created.toLocaleDateString()}
+                </span>
               </div>
               <div>
                 <span className="text-muted-foreground">Timeout:</span>{" "}
-                <span className="font-medium">{escrow.timeout} days</span>
+                <span className="font-medium">
+                  {timeoutDate.toLocaleDateString()}{" "}
+                </span>
               </div>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowDetails(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setShowDetails(false)}
+              className="text-primary bg-transparent"
+            >
               Close
             </Button>
           </DialogFooter>
@@ -266,10 +468,12 @@ export function EscrowCard({ escrow }: EscrowCardProps) {
 
       {/* Dispute Dialog */}
       <Dialog open={showDispute} onOpenChange={setShowDispute}>
-        <DialogContent>
+        <DialogContent className="bg-card border-border mx-auto">
           <DialogHeader>
             <DialogTitle>Raise Dispute</DialogTitle>
-            <DialogDescription>Explain the issue to the arbiter for resolution</DialogDescription>
+            <DialogDescription>
+              Explain the issue to the arbiter for resolution
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
@@ -285,11 +489,26 @@ export function EscrowCard({ escrow }: EscrowCardProps) {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowDispute(false)} disabled={isLoading}>
+            <Button
+              variant="outline"
+              onClick={() => setShowDispute(false)}
+              disabled={isLoading}
+              className="text-primary bg-transparent"
+            >
               Cancel
             </Button>
-            <Button onClick={handleRaiseDispute} disabled={!disputeReason.trim() || isLoading}>
-              {isLoading ? "Submitting..." : "Submit Dispute"}
+            <Button
+              onClick={handleRaiseDispute}
+              disabled={!disputeReason.trim() || isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <Spinner size="sm" className="text-primary-foreground" />
+                  Submitting...
+                </>
+              ) : (
+                "Submit Dispute"
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -297,10 +516,12 @@ export function EscrowCard({ escrow }: EscrowCardProps) {
 
       {/* Resolve Dialog */}
       <Dialog open={showResolve} onOpenChange={setShowResolve}>
-        <DialogContent>
+        <DialogContent className="bg-card border-border mx-auto">
           <DialogHeader>
             <DialogTitle>Resolve Dispute</DialogTitle>
-            <DialogDescription>Make a decision on who should receive the funds</DialogDescription>
+            <DialogDescription>
+              Make a decision on who should receive the funds
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
@@ -316,7 +537,7 @@ export function EscrowCard({ escrow }: EscrowCardProps) {
             </div>
             <div className="flex gap-3">
               <Button
-                className="flex-1 bg-transparent"
+                className="flex-1 bg-transparent text-primary"
                 variant="outline"
                 onClick={() => handleResolveDispute("buyer")}
                 disabled={!resolutionNote.trim() || isLoading}
@@ -334,6 +555,14 @@ export function EscrowCard({ escrow }: EscrowCardProps) {
           </div>
         </DialogContent>
       </Dialog>
+      {/* Confirm Receipt Dialog */}
+      <ConfirmReceiptModal
+        isOpen={showConfirmReceipt}
+        onClose={() => setShowConfirmReceipt(false)}
+        onConfirm={release}
+        listingTitle={escrow.listing_title}
+        isLoading={isLoading}
+      />
     </>
-  )
+  );
 }

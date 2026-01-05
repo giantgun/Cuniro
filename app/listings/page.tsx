@@ -1,9 +1,13 @@
-"use client"
+"use client";
 
-import { Navbar } from "@/components/navbar"
-import { ListingCard } from "@/components/listing-card"
-import { useEffect, useState } from "react"
-import { supabase } from "@/hooks/supabase"
+import { Navbar } from "@/components/navbar";
+import { ListingCard } from "@/components/listing-card";
+import { useEffect, useState } from "react";
+import { supabase } from "@/hooks/supabase";
+import { Spinner } from "@/components/ui/spinner";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { CreateListingModal } from "@/components/create-listing-modal";
 
 // Mock listings data - would come from API/database in production
 const listings = [
@@ -79,55 +83,81 @@ const listings = [
     bedrooms: 3,
     bathrooms: 2,
   },
-]
+];
 
 export default function ListingsPage() {
   const [data, setData] = useState<any[] | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [reloadFlag, setReloadFlag] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setIsLoading(true);
         const { data, error } = await supabase
-          .from('listings')
+          .from("listings")
           .select(`*, profiles (address) `)
-          .eq("status", "escrowed");
+          .eq("status", "available");
         if (error) {
-          throw error
+          throw error;
         }
-        console.log("Fetched listings from Supabase:", data)
-        setData(data)
+        console.log("Fetched listings from Supabase:", data);
+        setData(data);
       } catch (error) {
         console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
       }
-    }
+    };
 
-    fetchData()
-
-  }, [])
+    fetchData();
+  }, [reloadFlag]);
   return (
     <div className="min-h-screen">
       <Navbar />
 
       <div className="pt-24 pb-20 px-4">
         <div className="container mx-auto max-w-7xl">
-          <div className="mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Student Housing Listings</h1>
-            <p className="text-xl text-muted-foreground">
-              Browse verified accommodations and rent with secure escrow protection
-            </p>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">
+                Student Housing Listings
+              </h1>
+              <p className="text-muted-foreground mt-1">
+                Browse verified accommodations and rent with secure escrow
+                protection
+              </p>
+            </div>
           </div>
 
+          {(!data || data.length === 0) && (
+            <div className="text-center py-12 border border-dashed border-border rounded-lg">
+              {isLoading ? (
+                <Spinner size="lg" className="m-auto" />
+              ) : (
+                <p className="text-muted-foreground">
+                  No Listings at the moment
+                </p>
+              )}
+            </div>
+          )}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {data && data.map((listing) => (
-              <ListingCard key={listing.id} listing={listing} />
-            ))}
-            {!data && (
-              <div className="text-center py-12 border border-dashed border-border rounded-lg">
-                <p className="text-muted-foreground">No Listings at the moment</p>
-              </div>
-            )}
+            {data &&
+              data[0] &&
+              data.map((listing) => (
+                <ListingCard key={listing.id} listing={listing} />
+              ))}
           </div>
         </div>
       </div>
+      <CreateListingModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onCreate={() => {
+          setReloadFlag(!reloadFlag);
+        }}
+      />
     </div>
-  )
+  );
 }
