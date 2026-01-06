@@ -557,8 +557,8 @@ export function useContract() {
 
         toast({
           variant: "success",
-          title: "Dispute Resolved",
-          description: `Funds have been auto-released to your wallet`,
+          title: "Funds Claimed",
+          description: `Funds have been claimed successfully`,
         });
 
         return true;

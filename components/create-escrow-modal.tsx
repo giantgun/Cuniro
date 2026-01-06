@@ -3,7 +3,7 @@
 import type React from "react";
 
 import { useState } from "react";
-import { X, AlertCircle, Info } from "lucide-react";
+import { X, AlertCircle, Info, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -41,21 +41,18 @@ interface CreateEscrowModalProps {
 }
 
 // Mock arbiters - would come from smart contract in production
-const arbiters = [
+const defaultArbiters = [
   {
     address: "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
     name: "UniCrow Official Arbiter",
-    fee: "2%",
   },
   {
     address: "0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2",
     name: "Student Housing Authority",
-    fee: "1.5%",
   },
   {
     address: "0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db",
     name: "Community Mediator",
-    fee: "1%",
   },
 ];
 
@@ -71,14 +68,52 @@ export function CreateEscrowModal({
   const { toast } = useToast();
   const { isConnected } = useWallet();
   const { createEscrow, isLoading } = useContract();
+  const minutes = Number(timeout) * 24 * 60;
+  const [arbiters, setArbiters] = useState(defaultArbiters);
+  const [showAddArbiterModal, setShowAddArbiterModal] = useState(false);
+  const [newArbiterName, setNewArbiterName] = useState("");
+  const [newArbiterAddress, setNewArbiterAddress] = useState("");
 
   if (!isOpen) return null;
 
-  const platformFee = "0.5%";
   const selectedArbiterData = arbiters.find(
     (a) => a.address === selectedArbiter,
   );
-  const arbiterFee = selectedArbiterData?.fee || "0%";
+
+  const handleAddArbiter = () => {
+    if (!newArbiterName.trim() || !newArbiterAddress.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Missing Fields",
+        description: "Please enter arbiter name, address, and fee",
+      });
+      return;
+    }
+
+    if (!/^0x[a-fA-F0-9]{40}$/.test(newArbiterAddress)) {
+      toast({
+        variant: "destructive",
+        title: "Invalid Address",
+        description: "Please enter a valid Ethereum address (0x...)",
+      });
+      return;
+    }
+
+    const newArbiter = {
+      address: newArbiterAddress,
+      name: newArbiterName,
+    };
+
+    setArbiters([...arbiters, newArbiter]);
+    setNewArbiterName("");
+    setNewArbiterAddress("");
+    setShowAddArbiterModal(false);
+
+    toast({
+      title: "Arbiter Added",
+      description: `${newArbiterName} has been added to the list`,
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,7 +131,7 @@ export function CreateEscrowModal({
       listing.profiles.address,
       selectedArbiter,
       listing.price,
-      Number.parseInt(timeout) * 60, //*60*24
+      Number.parseInt(`${Number(timeout) * 60 * 60 * 24}`),
       terms,
       listing.title,
       Number.parseInt(listing.id),
@@ -186,7 +221,7 @@ export function CreateEscrowModal({
 
               <div>
                 <Label htmlFor="amount" className="text-sm font-medium">
-                  Escrow Amount (MNEE)
+                  Escrow Amount ($)
                 </Label>
                 <Input
                   id="amount"
@@ -234,6 +269,13 @@ export function CreateEscrowModal({
                   <SelectValue placeholder="Select timeout period" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="0.00139">2 minutes</SelectItem>
+                  <SelectItem value="0.00347">5 minutes</SelectItem>
+                  <SelectItem value="0.00694">10 minutes</SelectItem>
+                  <SelectItem value="0.0208333">30 minutes</SelectItem>
+                  <SelectItem value="0.041666666666667 ">1 hour</SelectItem>
+                  <SelectItem value="1">1 day</SelectItem>
+                  <SelectItem value="3">3 days</SelectItem>
                   <SelectItem value="7">7 days</SelectItem>
                   <SelectItem value="14">14 days (Recommended)</SelectItem>
                   <SelectItem value="30">30 days</SelectItem>
@@ -244,10 +286,21 @@ export function CreateEscrowModal({
 
             {/* Arbiter Selection */}
             <div>
-              <Label htmlFor="arbiter" className="text-sm font-medium">
-                Select Arbiter
-                <span className="text-destructive ml-1">*</span>
-              </Label>
+              <div className="flex items-center justify-between mb-2">
+                <Label htmlFor="arbiter" className="text-sm font-medium">
+                  Select Arbiter
+                  <span className="text-destructive ml-1">*</span>
+                </Label>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowAddArbiterModal(true)}
+                  className="h-8 w-8 p-0"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
               <p className="text-xs text-muted-foreground mt-1 mb-2">
                 Independent party who will resolve disputes if they arise
               </p>
@@ -265,7 +318,7 @@ export function CreateEscrowModal({
                       <div className="flex flex-col">
                         <span className="font-medium">{arbiter.name}</span>
                         <span className="text-xs font-light">
-                          Fee: {arbiter.fee} • {arbiter.address.slice(0, 10)}...
+                          Fee: 1 • {arbiter.address.slice(0, 10)}...
                         </span>
                       </div>
                     </SelectItem>
@@ -284,19 +337,20 @@ export function CreateEscrowModal({
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Platform Fee</span>
-                    <span className="font-medium">{platformFee}</span>
+                    <span className="font-medium">0.1%</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Arbiter Fee</span>
-                    <span className="font-medium">{arbiterFee}</span>
+                  <div className="flex justify-between items-center">
+                    <div className="flex flex-col">
+                      <span className="text-muted-foreground">Arbiter Fee</span>
+                      <span className="text-xs text-muted-foreground/70">
+                        Only if dispute raised
+                      </span>
+                    </div>
+                    <span className="font-medium">1%</span>
                   </div>
                   <div className="border-t border-border pt-2 flex justify-between">
                     <span className="font-semibold">Total Fees</span>
-                    <span className="font-semibold text-primary">
-                      {selectedArbiter
-                        ? `${Number.parseFloat(platformFee) + Number.parseFloat(arbiterFee)}%`
-                        : platformFee}
-                    </span>
+                    <span className="font-semibold text-primary">1.1%</span>
                   </div>
                 </div>
               </CardContent>
@@ -310,10 +364,13 @@ export function CreateEscrowModal({
                   <div className="space-y-1">
                     <p className="text-sm font-medium">Automatic Release</p>
                     <p className="text-xs text-muted-foreground leading-relaxed">
-                      After {timeout} days, if no dispute is raised, funds will
-                      automatically be released to the landlord. Make sure to
-                      inspect the property and raise any issues before the
-                      timeout expires.
+                      After{" "}
+                      {Number(timeout) < 1
+                        ? `${Math.round(minutes)} minutes`
+                        : `${timeout} days`}
+                      , if no dispute is raised, funds will automatically be
+                      claimable by the landlord. Make sure to inspect the
+                      property and raise any issues before the timeout expires.
                     </p>
                   </div>
                 </div>
@@ -348,6 +405,78 @@ export function CreateEscrowModal({
           </div>
         </form>
       </div>
+      {showAddArbiterModal && (
+        <div className="fixed inset-0 z-[60] bg-background/80 backdrop-blur-sm flex m-auto justify-center p-2 lg:p-4">
+          <Card className="w-full max-w-sm max-h-[72vh]">
+            <div className="flex items-center justify-between px-6 pb-3 border-b border-border">
+              <div>
+                <h3 className="text-lg font-semibold">Add New Arbiter</h3>
+                <p className="text-xs text-muted-foreground">
+                  This is a test only feature, listed arbiters are to be
+                  verified by platform.
+                </p>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowAddArbiterModal(false)}
+                className="h-8 w-8 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="px-6 pb-3 space-y-2">
+              <div>
+                <Label htmlFor="arbiter-name" className="text-sm font-medium">
+                  Arbiter Name
+                </Label>
+                <Input
+                  id="arbiter-name"
+                  placeholder="e.g., Community Arbitration Service"
+                  value={newArbiterName}
+                  onChange={(e) => setNewArbiterName(e.target.value)}
+                  className="mt-1.5"
+                />
+              </div>
+              <div>
+                <Label
+                  htmlFor="arbiter-address"
+                  className="text-sm font-medium"
+                >
+                  Arbiter Address
+                </Label>
+                <Input
+                  id="arbiter-address"
+                  placeholder="0x..."
+                  value={newArbiterAddress}
+                  onChange={(e) => setNewArbiterAddress(e.target.value)}
+                  className="mt-1.5"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Valid Ethereum address starting with 0x
+                </p>
+              </div>
+              <div className="flex gap-3 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowAddArbiterModal(false)}
+                  className="text-primary bg-transparent flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  onClick={handleAddArbiter}
+                  className="flex-1"
+                >
+                  Add Arbiter
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

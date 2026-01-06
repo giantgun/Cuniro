@@ -23,6 +23,7 @@ interface WalletContextType {
   provider?: ethers.BrowserProvider;
   signer?: ethers.JsonRpcSigner;
   userId?: string | null;
+  autoDisconnect: () => void;
 }
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
@@ -257,6 +258,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const autoDisconnect = async () => {
+    setAccount(null);
+  };
+
   return (
     <WalletContext.Provider
       value={{
@@ -270,6 +275,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         provider: provider || undefined,
         signer: signer || undefined,
         userId: userId || undefined,
+        autoDisconnect,
       }}
     >
       {children}

@@ -32,6 +32,7 @@ import { Label } from "@/components/ui/label";
 import { useContract } from "@/hooks/use-contract";
 import { Spinner } from "./ui/spinner";
 import { ConfirmReceiptModal } from "./confirm-reciept-modal";
+import { ConfirmClaimFundsModal } from "./confirm-claim-funds";
 
 export interface Escrow {
   id: string;
@@ -72,6 +73,7 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
   const created = new Date(escrow.created_at);
   const timeoutDate = new Date(created.getTime() + escrow.timeout * 1000);
   const [showConfirmReceipt, setShowConfirmReceipt] = useState(false);
+  const [showClaimFunds, setShowClaimFunds] = useState(false);
 
   const handleConfirmReceipt = () => {
     setShowConfirmReceipt(true);
@@ -185,6 +187,10 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
     onStateChange();
   };
 
+  const handleClaimFunds = () => {
+    setShowClaimFunds(true);
+  };
+
   return (
     <>
       <Card className="bg-card border-border">
@@ -222,25 +228,35 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
           {/* Countdown */}
           {escrow.status === "pending" && (
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">
-                  Time until auto-release
-                </span>
-                <span className="font-medium">
-                  {daysLeft < 1 ? (
-                    <>
-                      {minutesLeft} {minutesLeft === 1 ? "minute" : "minutes"}{" "}
-                      left
-                    </>
-                  ) : (
-                    <>
-                      {Math.floor(daysLeft)} {daysLeft === 1 ? "day" : "days"}{" "}
-                      left
-                    </>
-                  )}
-                </span>
-              </div>
-              <Progress value={progress} className="h-2" />
+              {minutesLeft != 0 && (
+                <>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      Time until auto-release
+                    </span>
+                    <span className="font-medium">
+                      {daysLeft < 1 ? (
+                        <>
+                          {minutesLeft}{" "}
+                          {minutesLeft === 1 ? "minute" : "minutes"} left
+                        </>
+                      ) : (
+                        <>
+                          {Math.floor(daysLeft)}{" "}
+                          {daysLeft === 1 ? "day" : "days"} left
+                        </>
+                      )}
+                    </span>
+                  </div>
+                  <Progress value={progress} className="h-2" />
+                </>
+              )}
+              {minutesLeft == 0 && (
+                <div className="flex items-center gap-2 text-xs text-green-500 font-medium mt-2">
+                  <CheckCircle className="h-4 w-4" />
+                  Ready to claim
+                </div>
+              )}
             </div>
           )}
 
@@ -389,7 +405,7 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
             escrow.status === "pending" && (
               <Button
                 size="sm"
-                onClick={handleAutoRelease}
+                onClick={handleClaimFunds}
                 disabled={isLoading}
                 className="col-span-2"
               >
@@ -399,7 +415,7 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
                     Processing...
                   </>
                 ) : (
-                  "Recieve Funds"
+                  "Claim Funds"
                 )}
               </Button>
             )}
@@ -555,12 +571,21 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
           </div>
         </DialogContent>
       </Dialog>
-      {/* Confirm Receipt Dialog */}
+
       <ConfirmReceiptModal
         isOpen={showConfirmReceipt}
         onClose={() => setShowConfirmReceipt(false)}
         onConfirm={release}
         listingTitle={escrow.listing_title}
+        isLoading={isLoading}
+      />
+
+      <ConfirmClaimFundsModal
+        isOpen={showClaimFunds}
+        onClose={() => setShowClaimFunds(false)}
+        onConfirm={handleAutoRelease}
+        listingTitle={escrow.listing_title}
+        amount={escrow.amount}
         isLoading={isLoading}
       />
     </>

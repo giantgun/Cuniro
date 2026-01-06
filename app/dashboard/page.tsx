@@ -8,6 +8,7 @@ import { useContract } from "@/hooks/use-contract";
 import { useWallet } from "@/hooks/use-wallet";
 import { Spinner } from "@/components/ui/spinner";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/hooks/supabase";
 
 // Mock escrow data - would come from blockchain in production
 const mockEscrows = [
@@ -120,7 +121,7 @@ const mockEscrows = [
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("buyer");
   const [data, setData] = useState<any[] | null>([]);
-  const { account, userId } = useWallet();
+  const { account, userId, autoDisconnect } = useWallet();
   const [isLoading, setIsLoading] = useState(false);
   const [reloadFlag, setReloadFlag] = useState(false);
   const { toast } = useToast();
@@ -156,6 +157,7 @@ export default function DashboardPage() {
       return 1; // 'b' passes, moves up
     return 0; // same condition, no change
   });
+
   const sellerEscrows = [
     ...(data ?? [])
       .filter((escrow) => escrow.seller_address.toLowerCase() === account)
@@ -175,6 +177,7 @@ export default function DashboardPage() {
       return 1; // 'b' passes, moves up
     return 0; // same condition, no change
   });
+
   const arbiterEscrows = [
     ...(data ?? [])
       .filter((escrow) => escrow.arbiter_address.toLowerCase() === account)
@@ -184,17 +187,21 @@ export default function DashboardPage() {
     if (!(e1.status === "disputed") && e2.status === "disputed") return 1; // 'b' passes, moves up
     return 0; // same condition, no change
   });
+
   const buyerNotifications = buyerEscrows.filter(
     (escrow: Escrow) => escrow.status === "pending",
   ).length;
+
   const sellerNotifications =
     sellerEscrows.filter(
       (escrow: Escrow) =>
         calculateProgress(escrow) === 100 && escrow.status === "pending",
     ).length || 0;
+
   const arbiterNotifications = arbiterEscrows.filter(
     (escrow: Escrow) => escrow.status === "disputed",
   ).length;
+
   const { getAllUserEscrows } = useContract();
 
   const onStateChange = async () => {
@@ -205,14 +212,22 @@ export default function DashboardPage() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
+        const {
+          data: { user },
+          error: userError,
+        } = await supabase.auth.getUser();
+        if (userError) {
+          autoDisconnect();
+          throw userError;
+        }
         const result = await getAllUserEscrows();
         setData(result);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching data:", error);
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Failed to fetch escrows. Please try again later.",
+          description: error.message,
         });
       } finally {
         setIsLoading(false);

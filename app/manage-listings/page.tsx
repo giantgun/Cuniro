@@ -61,34 +61,68 @@ export default function ManageListingsPage() {
   const [data, setData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [reloadFlag, setReloadFlag] = useState(false);
-  const { account } = useWallet();
+  const { account, autoDisconnect } = useWallet();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [listingToDelete, setListingToDelete] = useState<any | null>(null);
   const { toast } = useToast();
 
   const handleDeleteClick = (listing: any) => {
-    setListingToDelete(listing);if (!(listingToDelete.status == "available")){
-        toast({
-          title: "Delete not allowed",
-          description: `"${listingToDelete.title}" delete not allowed, because it's associated with an escrow.`,
-          variant: "destructive",
-        });
-        return
-      }
+    setListingToDelete(listing);
+    console.log("lis ", listing);
+    if (!(listing.status == "available")) {
+      toast({
+        title: "Delete not allowed",
+        description: `"${listing.title}" delete not allowed, because it's associated with an active escrow or it's rented.`,
+        variant: "destructive",
+      });
+      return;
+    }
 
     setDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (listingToDelete) {
-      toast({
-        title: "Listing deleted",
-        description: `"${listingToDelete.title}" has been removed.`,
-        variant: "success",
-      });
-      setDeleteModalOpen(false);
-      setListingToDelete(null);
-      setReloadFlag(!reloadFlag);
+      try {
+        const parts = listingToDelete.image_url?.split("/");
+        console.log(parts[parts.length - 1], " | ", parts[parts.length - 4]);
+        const userId = parts[parts.length - 4];
+        const imageId = parts[parts.length - 1];
+
+        const { data, error: imageDeleteError } = await supabase.storage
+          .from("unicrow")
+          .remove([`${userId}/listings/images/${imageId}`]);
+
+        if (imageDeleteError) {
+          throw imageDeleteError;
+        }
+
+        const { error } = await supabase
+          .from("listings")
+          .delete()
+          .match({ id: listingToDelete.id, status: "available" });
+
+        if (error) {
+          throw error;
+        }
+
+        setReloadFlag(!reloadFlag);
+        toast({
+          title: "Listing deleted",
+          description: `"${listingToDelete.title}" has been removed.`,
+          variant: "success",
+        });
+      } catch (error: any) {
+        console.error(error);
+        toast({
+          title: "Delete failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      } finally {
+        setDeleteModalOpen(false);
+        setListingToDelete(null);
+      }
     }
   };
 
@@ -101,6 +135,7 @@ export default function ManageListingsPage() {
           error: userError,
         } = await supabase.auth.getUser();
         if (userError) {
+          autoDisconnect();
           throw userError;
         }
 
@@ -111,14 +146,13 @@ export default function ManageListingsPage() {
         if (error) {
           throw error;
         }
-        console.log("Fetched listings from Supabase:", data);
         setData(data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      } catch (error: any) {
+        console.error("Error", error);
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Failed to fetch listing data. Please try again later.",
+          description: error.message,
         });
       } finally {
         setIsLoading(false);
@@ -286,11 +320,14 @@ export default function ManageListingsPage() {
                                         : "secondary"
                                     }
                                   >
-                                    {listing.status == "available"? `${listing.status.toUpperCase()}`: "ESCROWED"}
+                                    {listing.status == "available" ||
+                                    listing.status == "rented"
+                                      ? `${listing.status.toUpperCase()}`
+                                      : "ESCROWED"}
                                   </Badge>
                                 </td>
                                 <td className="p-4 font-mono text-sm">
-                                  {listing.price} MNEE
+                                  ${listing.price}
                                 </td>
                                 {/* <td className="p-4 text-sm text-muted-foreground">{listing.views}</td> */}
                                 <td className="p-4 text-right">
@@ -303,10 +340,10 @@ export default function ManageListingsPage() {
                                         if (!(listing.status == "available")) {
                                           toast({
                                             title: "Editing not allowed",
-                                            description: `"${listing.title}" Edit not allowed because, it is associated with an escrow`,
+                                            description: `"${listing.title}" Edit not allowed because, it is associated with an active escrow or it's rented.`,
                                             variant: "destructive",
                                           });
-                                          return
+                                          return;
                                         }
                                         localStorage.setItem(
                                           "listingToEdit",
@@ -322,9 +359,7 @@ export default function ManageListingsPage() {
                                       variant="ghost"
                                       size="icon"
                                       className="h-8 w-8 text-destructive hover:text-destructive"
-                                      onClick={() =>
-                                        handleDeleteClick(listing)
-                                      }
+                                      onClick={() => handleDeleteClick(listing)}
                                     >
                                       <Trash2 className="h-4 w-4" />
                                     </Button>
@@ -351,7 +386,7 @@ export default function ManageListingsPage() {
             </>
           )}
 
-          {!account && (
+          {!account && !isLoading && (
             <div className="text-center py-12 border border-dashed border-border rounded-lg">
               <p className="text-muted-foreground">
                 Connect your wallet to manage your listings.

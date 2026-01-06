@@ -29,7 +29,7 @@ export function DeleteListingModal({
   const [isLoading, setIsLoading] = useState(false);
   const handleConfirm = async () => {
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    //await new Promise((resolve) => setTimeout(resolve, 1500));
     await onConfirm();
     setIsLoading(false);
   };

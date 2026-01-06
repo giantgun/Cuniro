@@ -65,7 +65,8 @@ export default function HomePage() {
                 <h3 className="text-xl font-semibold mb-3">Browse Listings</h3>
                 <p className="text-muted-foreground leading-relaxed">
                   Find your perfect student accommodation from verified
-                  landlords. View photos, location, and pricing in MNEE tokens.
+                  landlords. View photos, location, and pricing in stable MNEE
+                  tokens.
                 </p>
               </CardContent>
             </Card>

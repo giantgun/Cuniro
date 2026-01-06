@@ -99,6 +99,7 @@ export default function ListingsPage() {
           .from("listings")
           .select(`*, profiles (address) `)
           .eq("status", "available");
+
         if (error) {
           throw error;
         }

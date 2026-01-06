@@ -99,7 +99,7 @@ export function Navbar() {
                   <span className="sr-only">Open menu</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuItem asChild className="md:hidden">
                   <Link href="/">Home</Link>
                 </DropdownMenuItem>
