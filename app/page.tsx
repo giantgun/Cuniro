@@ -183,7 +183,7 @@ export default function HomePage() {
               <span className="text-xl font-semibold">UniCrow</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              © 2025 UniCrow. Decentralized escrow for secure housing.
+              © 2026 UniCrow. Decentralized escrow for secure housing.
             </p>
           </div>
         </div>
