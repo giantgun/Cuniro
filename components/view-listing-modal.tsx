@@ -77,7 +77,7 @@ export function ViewListingModal({
 
           {/* Key Details Grid */}
           <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
-            <div className="bg-card border border-border/50 rounded-lg p-5 border-primary/50 transition-colors">
+            <div className="bg-card border border-border/50 rounded-lg p-5 transition-colors">
               <div className="flex items-start gap-3">
                 <div className="bg-primary/10 p-2.5 rounded-lg">
                   <MapPin className="h-5 w-5 text-primary" />
@@ -93,7 +93,7 @@ export function ViewListingModal({
               </div>
             </div>
 
-            <div className="bg-card border border-border/50 rounded-lg p-5 border-primary/50 transition-colors">
+            <div className="bg-card border border-border/50 rounded-lg p-5 transition-colors">
               <div className="flex items-start gap-3">
                 <div className="bg-primary/10 p-2.5 rounded-lg">
                   <DollarSign className="h-5 w-5 text-primary" />
@@ -109,7 +109,7 @@ export function ViewListingModal({
               </div>
             </div>
 
-            <div className="bg-card border border-border/50 rounded-lg p-5 border-primary/50 transition-colors">
+            <div className="bg-card border border-border/50 rounded-lg p-5 transition-colors">
               <div className="flex items-start gap-3">
                 <div className="bg-primary/10 p-2.5 rounded-lg">
                   <Bed className="h-5 w-5 text-primary" />
@@ -125,7 +125,7 @@ export function ViewListingModal({
               </div>
             </div>
 
-            <div className="bg-card border border-border/50 rounded-lg p-5 border-primary/50 transition-colors">
+            <div className="bg-card border border-border/50 rounded-lg p-5 transition-colors">
               <div className="flex items-start gap-3">
                 <div className="bg-primary/10 p-2.5 rounded-lg">
                   <Bath className="h-5 w-5 text-primary" />

@@ -149,7 +149,7 @@ export function ListingCard({ listing }: ListingCardProps) {
               </Button>
             ) : (
               <Button
-                className="w-1/2 flex items-center justify-center"
+                className="w-1/2 flex items-center justify-center border-none"
                 onClick={() => setShowEscrowModal(true)}
               >
                 Rent with Escrow
