@@ -9,6 +9,7 @@ import {
   User,
   Scale,
   ExternalLink,
+  Phone,
 } from "lucide-react";
 import {
   Card,
@@ -50,6 +51,7 @@ export interface Escrow {
   terms: string;
   dispute_reason?: string;
   listing_id: number;
+  listings: any;
 }
 
 interface EscrowCardProps {
@@ -450,7 +452,14 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <h4 className="text-sm font-medium mb-2">Terms & Conditions</h4>
+              <h4 className="text-sm font-medium mb-1">Contact Landlord</h4>
+              <p className="text-sm text-muted-foreground flex items-center">
+                <Phone className="h-3 w-3 text-primary mr-1" />
+                <span>{escrow.listings.contact}</span>
+              </p>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium mb-1">Terms & Conditions</h4>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {escrow.terms}
               </p>

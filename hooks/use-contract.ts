@@ -581,10 +581,11 @@ export function useContract() {
     try {
       const { data, error } = await supabase
         .from("escrows")
-        .select(`*`)
+        .select(`*, listings (contact)`)
         .or(
           `buyer_address.eq.${account},seller_address.eq.${account},arbiter_address.eq.${account}`,
         );
+        
       if (error) {
         throw error;
       }
