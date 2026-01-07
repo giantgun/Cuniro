@@ -1,19 +1,22 @@
 "use client";
-import { X, MapPin, DollarSign, Bed, Bath, Lock } from "lucide-react";
+import { X, MapPin, Bed, Bath, Lock, Phone, Edit2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 interface ViewListingModalProps {
   isOpen: boolean;
   onClose: () => void;
   listing: any;
+  isOwner: boolean;
+  onClickEdit: () => void
 }
 
 export function ViewListingModal({
   isOpen,
   onClose,
   listing,
+  isOwner,
+  onClickEdit,
 }: ViewListingModalProps) {
   if (!isOpen) return null;
 
@@ -55,12 +58,18 @@ export function ViewListingModal({
         <div className="pb-3 space-y-6">
           {/* Property Image */}
           {listing.image_url && (
-            <div className="overflow-hidden border border-border">
+            <div className="relative overflow-hidden border border-border">
               <img
                 src={listing.image_url || "/placeholder.svg"}
                 alt={listing.title}
                 className="w-full h-80 object-cover"
               />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                <div className="text-white">
+                  <div className="text-3xl font-bold">${listing.price.toLocaleString()}</div>
+                  <div className="text-sm text-white/80">per month</div>
+                </div>
+              </div>
             </div>
           )}
 
@@ -68,9 +77,9 @@ export function ViewListingModal({
           <div className="pb-2 px-6">
             <div className="flex items-start justify-between gap-4 mb-3">
               <h3 className="text-2xl font-bold">{listing.title}</h3>
-              <Badge className={`${getStatusColor(listing.status)}`}>
-                {listing.status.charAt(0).toUpperCase() +
-                  listing.status.slice(1)}
+              <Badge className={`${getStatusColor(status)}`}>
+                {status.charAt(0).toUpperCase() +
+                  status.slice(1)}
               </Badge>
             </div>
 
@@ -95,15 +104,11 @@ export function ViewListingModal({
               <div className="bg-card border border-border/50 rounded-lg p-5 transition-colors">
                 <div className="flex items-start gap-3">
                   <div className="bg-primary/10 p-2.5 rounded-lg">
-                    <DollarSign className="h-5 w-5 text-primary" />
+                    <Phone className="h-5 w-5 text-primary" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                      Monthly Rent
-                    </p>
-                    <p className="text-md font-semibold text-foreground mt-1">
-                      ${listing.price.toLocaleString()}
-                    </p>
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Contact</p>
+                    <p className="text-md font-semibold text-foreground mt-1">{listing.contact || "Not provided"}</p>
                   </div>
                 </div>
               </div>
@@ -167,6 +172,16 @@ export function ViewListingModal({
 
             {/* Close Button */}
             <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
+              {(isOwner || isEditDisabled )&&
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-primary"
+                  onClick={onClickEdit}
+                >
+                  <Edit2 className="h-4 w-4" />
+                </Button>
+              }
               <Button
                 type="button"
                 variant="outline"

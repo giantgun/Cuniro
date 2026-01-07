@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { MapPin, Bed, Bath, ExternalLink, Settings, Eye } from "lucide-react";
+import { MapPin, Bed, Bath, ExternalLink, Settings, Eye, Phone } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { useWallet } from "@/hooks/use-wallet";
 import { Badge } from "./ui/badge";
 import { useRouter } from "next/navigation";
 import { ViewListingModal } from "./view-listing-modal";
+import { EditListingModal } from "./edit-listing-modal";
 
 interface Listing {
   id: string;
@@ -22,6 +23,7 @@ interface Listing {
   description: string;
   bedrooms: number;
   bathrooms: number;
+  contact: string
 }
 
 interface ListingCardProps {
@@ -34,12 +36,14 @@ export function ListingCard({ listing }: ListingCardProps) {
   const { account } = useWallet();
   const router = useRouter();
   const [reloadFlag, setReloadFlag] = useState(false);
+  const [editListing, setEditListing] = useState({});
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const truncateSeller = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
-  useEffect(() => {}, [reloadFlag]);
+  useEffect(() => { }, [reloadFlag]);
 
   return (
     <>
@@ -87,14 +91,22 @@ export function ListingCard({ listing }: ListingCardProps) {
               {listing.description}
             </p>
 
-            <div className="flex items-center justify-between pt-2">
+            <div className="flex justify-between pt-2">
               <div>
                 <div className="text-2xl font-bold text-primary">
                   ${listing.price} <span className="text-xs">in MNEE</span>
                 </div>
                 <div className="text-xs text-muted-foreground">per month</div>
               </div>
+              <div className="pt-2">
+                {/* <div className="text-xs text-muted-foreground mb-1">Contact</div> */}
+                <div className="flex items-center gap-2">
+                  <Phone className="h-3 w-3 text-primary" />
+                  <span className="text-xs font-medium">{listing.contact}</span>
+                </div>
+              </div>
             </div>
+
 
             <div className="pt-2 border-t border-border">
               <div className="text-xs text-muted-foreground mb-1">Landlord</div>
@@ -172,6 +184,25 @@ export function ListingCard({ listing }: ListingCardProps) {
         isOpen={showViewModal}
         onClose={() => setShowViewModal(false)}
         listing={listing}
+        onClickEdit={() => {
+                  localStorage.setItem(
+                    "listingToEdit",
+                    JSON.stringify(listing),
+                  );
+                  setEditListing(listing);
+                  setIsEditModalOpen(true);
+                }}
+        isOwner ={listing.profiles.address == account }
+      />
+
+      <EditListingModal
+        listin={editListing}
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setEditListing({});
+          setIsEditModalOpen(false);
+        }}
+        onEdit={() => setReloadFlag(!reloadFlag)}
       />
     </>
   );

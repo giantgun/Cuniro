@@ -68,9 +68,7 @@ export default function ManageListingsPage() {
   const [listingToDelete, setListingToDelete] = useState<any | null>(null);
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [listingToView, setListingToView] = useState<
-    (typeof initialListings)[0] | null
-  >(null);
+  const [listingToView, setListingToView] = useState<any>(null);
   const { toast } = useToast();
 
   const handleDeleteClick = (listing: any) => {
@@ -89,6 +87,7 @@ export default function ManageListingsPage() {
   };
 
   const handleViewClick = (listing: (typeof initialListings)[0]) => {
+    console.log(listing)
     setListingToView(listing);
     setViewModalOpen(true);
   };
@@ -153,7 +152,7 @@ export default function ManageListingsPage() {
 
         const { data, error } = await supabase
           .from("listings")
-          .select(`* `)
+          .select(`*, profiles (address)`)
           .eq("owner_id", user!.id);
         if (error) {
           throw error;
@@ -375,7 +374,7 @@ export default function ManageListingsPage() {
                                   ${listing.price}
                                 </td>
                                 <td className="p-4 text-right">
-                                  <div className="flex items-center justify-end gap-2">
+                                  <div className="flex items-center justify-end gap-2 text-primary">
                                     <Button
                                       variant="ghost"
                                       size="icon"
@@ -473,6 +472,15 @@ export default function ManageListingsPage() {
         isOpen={viewModalOpen}
         onClose={() => setViewModalOpen(false)}
         listing={listingToView}
+        onClickEdit={() => {
+                  localStorage.setItem(
+                    "listingToEdit",
+                    JSON.stringify(listingToView),
+                  );
+                  setEditListing(listingToView);
+                  setIsEditModalOpen(true);
+                }}
+        isOwner ={(listingToView?.profiles?.address || null) == account }
       />
     </div>
   );

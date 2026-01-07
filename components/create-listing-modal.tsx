@@ -28,6 +28,7 @@ interface ListingFormData {
   bedrooms: string;
   bathrooms: string;
   description: string;
+  contact: string;
   photo: File | null;
 }
 
@@ -47,6 +48,7 @@ export function CreateListingModal({
     bedrooms: "",
     bathrooms: "",
     description: "",
+    contact: "",
     photo: null,
   });
 
@@ -80,6 +82,7 @@ export function CreateListingModal({
       bedrooms: Number(data.bedrooms),
       bathrooms: Number(data.bathrooms),
       image_url: imageUrl,
+      contact: data.contact,
       status: "available",
     };
 
@@ -161,6 +164,25 @@ export function CreateListingModal({
                 className="mt-1.5"
               />
             </div>
+
+            <div className="space-y-1.5">
+              <Label>
+                Contact 
+                <span className="text-destructive">*</span>
+              </Label>
+              <div className="relative">
+                <Input
+                  id="contact"
+                  type="tel"
+                  placeholder="e.g. +234 801 234 5678"
+                  value={formData.contact}
+                  onChange={(e) => updateField("contact", e.target.value)}
+                  required
+                  className="pl-3"
+                />
+              </div>
+            </div>
+
 
             <div>
               <div className="flex">

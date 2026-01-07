@@ -30,7 +30,7 @@ export default function HomePage() {
               <Button size="lg" asChild className="text-lg">
                 <Link href="/listings">
                   Launch App
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <ArrowRight className="ml-1 h-5 w-5" />
                 </Link>
               </Button>
               <Button
@@ -162,7 +162,7 @@ export default function HomePage() {
               <Button size="lg" asChild className="text-lg">
                 <Link href="/listings">
                   Browse Listings
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <ArrowRight className="ml-1 h-5 w-5" />
                 </Link>
               </Button>
             </CardContent>

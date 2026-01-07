@@ -43,15 +43,15 @@ interface CreateEscrowModalProps {
 // Mock arbiters - would come from smart contract in production
 const defaultArbiters = [
   {
-    address: "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+    address: "0x2515DDc5E06a139f8E9800fF270a28e57B7ff466",
     name: "UniCrow Official Arbiter",
   },
   {
-    address: "0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2",
+    address: "0xa407C2829eB7A9bf7D015a5ddFC14f2a90C2ffcb",
     name: "Student Housing Authority",
   },
   {
-    address: "0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db",
+    address: "0xf21f1DcEe1Ea2f113C952DF7D1A52F1acCf7CF22",
     name: "Community Mediator",
   },
 ];

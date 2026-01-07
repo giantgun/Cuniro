@@ -30,6 +30,7 @@ interface ListingFormData {
   description: string;
   photo: File | null;
   status: string;
+  contact: string;
 }
 
 export function EditListingModal({
@@ -43,6 +44,18 @@ export function EditListingModal({
   const { toast } = useToast();
 
   const [existingImageUrl, setExistingImageUrl] = useState<string | null>(null);
+  const [checkData, setCheckData] = useState<ListingFormData>({
+    title: listin!.title,
+    location: listin!.location,
+    price: listin!.price,
+    deposit: listin!.deposit,
+    bedrooms: listin!.bedrooms,
+    bathrooms: listin!.bathrooms,
+    description: listin.description,
+    photo: null,
+    status: "",
+    contact: "",
+  });
 
   const [formData, setFormData] = useState<ListingFormData>({
     title: listin!.title,
@@ -54,6 +67,7 @@ export function EditListingModal({
     description: listin.description,
     photo: null,
     status: "",
+    contact: "",
   });
 
   useEffect(() => {
@@ -62,8 +76,6 @@ export function EditListingModal({
         setIsLoading(true);
         const listingTo = localStorage.getItem("listingToEdit");
         const listing = listingTo ? JSON.parse(listingTo) : {};
-
-        console.log("Fetched listing from localStorage:", listing);
 
         setFormData({
           title: listing.title,
@@ -75,6 +87,20 @@ export function EditListingModal({
           description: listing.description,
           photo: null,
           status: listing.status,
+          contact: listing.contact
+        });
+
+        setCheckData({
+          title: listing.title,
+          location: listing.location,
+          price: listing.price,
+          deposit: listing.deposit,
+          bedrooms: listing.bedrooms,
+          bathrooms: listing.bathrooms,
+          description: listing.description,
+          photo: null,
+          status: listing.status,
+          contact: listing.contact
         });
 
         setExistingImageUrl(listing.image_url ?? null);
@@ -129,6 +155,7 @@ export function EditListingModal({
       bathrooms: Number(data.bathrooms),
       image_url: imageUrl,
       status: data.status,
+      contact: data.contact,
     };
 
     const { error: listingError } = await supabase
@@ -168,6 +195,24 @@ export function EditListingModal({
     }
   };
 
+  function isListingFormEqual(
+  a: ListingFormData,
+  b: ListingFormData
+): boolean {
+  return (
+    a.title === b.title &&
+    a.location === b.location &&
+    a.price === b.price &&
+    a.deposit === b.deposit &&
+    a.bedrooms === b.bedrooms &&
+    a.bathrooms === b.bathrooms &&
+    a.description === b.description &&
+    a.photo === b.photo &&
+    a.status === b.status &&
+    a.contact === b.contact
+  )
+}
+
   return (
     <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-card border border-border rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -203,6 +248,24 @@ export function EditListingModal({
                 required
                 className="mt-1.5"
               />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label>
+                Contact
+                <span className="text-destructive">*</span>
+              </Label>
+              <div className="relative">
+                <Input
+                  id="contact"
+                  type="tel"
+                  placeholder="e.g. +234 801 234 5678"
+                  value={formData.contact}
+                  onChange={(e) => updateField("contact", e.target.value)}
+                  required
+                  className="pl-3"
+                />
+              </div>
             </div>
 
             <div>
@@ -303,7 +366,7 @@ export function EditListingModal({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading || isListingFormEqual(checkData, formData)}>
               {isLoading ? (
                 <>
                   <Spinner size="sm" className="text-primary-foreground" />
