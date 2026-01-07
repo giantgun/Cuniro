@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { MapPin, Bed, Bath, ExternalLink, Settings } from "lucide-react";
+import { MapPin, Bed, Bath, ExternalLink, Settings, Eye } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { CreateEscrowModal } from "@/components/create-escrow-modal";
 import { useWallet } from "@/hooks/use-wallet";
 import { Badge } from "./ui/badge";
 import { useRouter } from "next/navigation";
+import { ViewListingModal } from "./view-listing-modal";
 
 interface Listing {
   id: string;
@@ -29,6 +30,7 @@ interface ListingCardProps {
 
 export function ListingCard({ listing }: ListingCardProps) {
   const [showEscrowModal, setShowEscrowModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
   const { account } = useWallet();
   const router = useRouter();
   const [reloadFlag, setReloadFlag] = useState(false);
@@ -121,21 +123,39 @@ export function ListingCard({ listing }: ListingCardProps) {
         </CardContent>
 
         <CardFooter className="pt-0 pb-4">
-          {listing.profiles.address == account ? (
-            <Button variant="outline" className="w-full bg-transparent" asChild>
-              <Link
-                href="/manage-listings"
-                className="w-full flex items-center justify-center text-primary"
+          <div className="flex gap-1 w-full">
+            <Button
+              className="w-1/2 bg-transparent flex items-center justify-center text-primary"
+              variant="outline"
+              onClick={() => setShowViewModal(true)}
+            >
+              <Eye className="h-4 w-4 mr-1" />
+              View
+            </Button>
+
+            {listing.profiles.address == account ? (
+              <Button
+                variant="outline"
+                className="w-1/2 bg-transparent"
+                asChild
               >
-                <Settings className="h-4 w-4 mr-2" />
-                Manage Listings
-              </Link>
-            </Button>
-          ) : (
-            <Button className="w-full" onClick={() => setShowEscrowModal(true)}>
-              Rent with Escrow
-            </Button>
-          )}
+                <Link
+                  href="/manage-listings"
+                  className="flex items-center justify-center text-primary"
+                >
+                  <Settings className="h-4 w-4 mr-1" />
+                  Your Listings
+                </Link>
+              </Button>
+            ) : (
+              <Button
+                className="w-1/2 flex items-center justify-center"
+                onClick={() => setShowEscrowModal(true)}
+              >
+                Rent with Escrow
+              </Button>
+            )}
+          </div>
         </CardFooter>
       </Card>
 
@@ -147,6 +167,11 @@ export function ListingCard({ listing }: ListingCardProps) {
           setReloadFlag(!reloadFlag);
           router.push("/dashboard");
         }}
+      />
+      <ViewListingModal
+        isOpen={showViewModal}
+        onClose={() => setShowViewModal(false)}
+        listing={listing}
       />
     </>
   );

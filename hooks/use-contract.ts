@@ -9,12 +9,12 @@ import { erc20Abi } from "abitype/abis";
 import { supabase } from "./supabase";
 
 export function useContract() {
-  const { account, isConnected, provider, signer } = useWallet();
+  const { account, isConnected } = useWallet();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const mneeAddress = "0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF";
+  const mneeAddress = process.env.NEXT_PUBLIC_MNEE_ADDRESS!;
   const mneeABI = erc20Abi;
-  const escrowManagerAddress = "0x2866fB299671B4C3013B3E814257ECB5510FfEed";
+  const escrowManagerAddress = process.env.NEXT_PUBLIC_ESCROW_MANAGER_ADDRESS!;
   const escrowManagerABI = [
     // ────────────── Constants & Public Vars ──────────────
     "function I_OWNER() view returns (address)",

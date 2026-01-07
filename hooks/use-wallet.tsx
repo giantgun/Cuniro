@@ -129,7 +129,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
       const { error, data } = await supabase.auth.signInWithWeb3({
         chain: "ethereum",
-        statement: "I accept the Terms of Service at https://example.com/tos",
+        statement:
+          "I accept the Terms of Service at https://uni-crow.vercel.app",
         wallet: accounts[0],
       });
 

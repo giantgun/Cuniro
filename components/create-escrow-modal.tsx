@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useWallet } from "@/hooks/use-wallet";
 import { useContract } from "@/hooks/use-contract";
@@ -81,6 +81,17 @@ export function CreateEscrowModal({
   );
 
   const handleAddArbiter = () => {
+    const presentArbiter = arbiters.find(
+      (a) => a.address === newArbiterAddress,
+    );
+    if (presentArbiter) {
+      toast({
+        variant: "destructive",
+        title: "Arbiter present",
+        description: `Arbiter already in list as "${presentArbiter.name}"`,
+      });
+      return;
+    }
     if (!newArbiterName.trim() || !newArbiterAddress.trim()) {
       toast({
         variant: "destructive",
@@ -127,6 +138,16 @@ export function CreateEscrowModal({
       return;
     }
 
+    if (selectedArbiter == listing.profiles.address) {
+      toast({
+        variant: "destructive",
+        title: "Arbiter and LandLord cannot be the same",
+        description:
+          "The selected arbiter is the Landlord, select another arbiter to continue.",
+      });
+      return;
+    }
+
     const escrowId = await createEscrow(
       listing.profiles.address,
       selectedArbiter,
@@ -140,6 +161,7 @@ export function CreateEscrowModal({
 
     if (escrowId) {
       onClose();
+      onCreate();
     }
   };
 
@@ -407,8 +429,8 @@ export function CreateEscrowModal({
       </div>
       {showAddArbiterModal && (
         <div className="fixed inset-0 z-[60] bg-background/80 backdrop-blur-sm flex m-auto justify-center p-2 lg:p-4">
-          <Card className="w-full max-w-sm max-h-[72vh]">
-            <div className="flex items-center justify-between px-6 pb-3 border-b border-border">
+          <Card className="w-full max-w-sm h-92">
+            <CardHeader className="flex items-center justify-between border-b border-border">
               <div>
                 <h3 className="text-lg font-semibold">Add New Arbiter</h3>
                 <p className="text-xs text-muted-foreground">
@@ -424,8 +446,8 @@ export function CreateEscrowModal({
               >
                 <X className="h-4 w-4" />
               </Button>
-            </div>
-            <div className="px-6 pb-3 space-y-2">
+            </CardHeader>
+            <CardContent className="space-y-3">
               <div>
                 <Label htmlFor="arbiter-name" className="text-sm font-medium">
                   Arbiter Name
@@ -473,7 +495,7 @@ export function CreateEscrowModal({
                   Add Arbiter
                 </Button>
               </div>
-            </div>
+            </CardContent>
           </Card>
         </div>
       )}

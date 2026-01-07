@@ -135,7 +135,10 @@ export function CreateListingModal({
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div className="space-y-4">
             <div>
-              <Label>Property Title</Label>
+              <div className="flex">
+                <Label>Property Title</Label>
+                <span className="text-destructive ml-1">*</span>
+              </div>
               <Input
                 placeholder="e.g. Modern Studio Near Campus"
                 value={formData.title}
@@ -146,7 +149,10 @@ export function CreateListingModal({
             </div>
 
             <div>
-              <Label>Location</Label>
+              <div className="flex">
+                <Label>Location</Label>
+                <span className="text-destructive ml-1">*</span>
+              </div>
               <Input
                 placeholder="e.g. Downtown University District"
                 value={formData.location}
@@ -157,7 +163,10 @@ export function CreateListingModal({
             </div>
 
             <div>
-              <Label>Monthly Rent (MNEE)</Label>
+              <div className="flex">
+                <Label>Monthly Rent ($)</Label>
+                <span className="text-destructive ml-1">*</span>
+              </div>
               <Input
                 type="number"
                 placeholder="e.g. 850"
@@ -170,7 +179,10 @@ export function CreateListingModal({
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Bedrooms</Label>
+                <div className="flex">
+                  <Label>Bedrooms</Label>
+                  <span className="text-destructive ml-1">*</span>
+                </div>
                 <Input
                   type="number"
                   placeholder="e.g. 1"
@@ -181,7 +193,10 @@ export function CreateListingModal({
                 />
               </div>
               <div>
-                <Label>Bathrooms</Label>
+                <div className="flex">
+                  <Label>Bathrooms</Label>
+                  <span className="text-destructive ml-1">*</span>
+                </div>
                 <Input
                   type="number"
                   placeholder="e.g. 1"
@@ -194,7 +209,10 @@ export function CreateListingModal({
             </div>
 
             <div>
-              <Label>Description</Label>
+              <div className="flex">
+                <Label>Description</Label>
+                <span className="text-destructive ml-1">*</span>
+              </div>
               <Textarea
                 placeholder="Describe the property, amenities, and proximity to campus..."
                 value={formData.description}
@@ -205,7 +223,10 @@ export function CreateListingModal({
             </div>
 
             <div>
-              <Label>Property Photo</Label>
+              <div className="flex">
+                <Label>Property Photo</Label>
+                <span className="text-destructive ml-1">*</span>
+              </div>
               <label className="mt-1.5 border-2 border-dashed border-border rounded-lg p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:border-primary/50 transition-colors">
                 <Upload className="h-8 w-8 text-muted-foreground mb-2" />
                 <p className="text-sm font-medium">Click to upload photo</p>

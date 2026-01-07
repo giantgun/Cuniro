@@ -18,6 +18,7 @@ import {
   MapPin,
   Users,
   Activity,
+  Eye,
 } from "lucide-react";
 import { CreateListingModal } from "@/components/create-listing-modal";
 import { Badge } from "@/components/ui/badge";
@@ -27,6 +28,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { EditListingModal } from "@/components/edit-listing-modal";
 import { useToast } from "@/hooks/use-toast";
 import { DeleteListingModal } from "@/components/delete-listing-modal";
+import { ViewListingModal } from "@/components/view-listing-modal";
 
 // Mock landlord listings
 const initialListings = [
@@ -64,6 +66,11 @@ export default function ManageListingsPage() {
   const { account, autoDisconnect } = useWallet();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [listingToDelete, setListingToDelete] = useState<any | null>(null);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [listingToView, setListingToView] = useState<
+    (typeof initialListings)[0] | null
+  >(null);
   const { toast } = useToast();
 
   const handleDeleteClick = (listing: any) => {
@@ -79,6 +86,11 @@ export default function ManageListingsPage() {
     }
 
     setDeleteModalOpen(true);
+  };
+
+  const handleViewClick = (listing: (typeof initialListings)[0]) => {
+    setListingToView(listing);
+    setViewModalOpen(true);
   };
 
   const handleConfirmDelete = async () => {
@@ -260,8 +272,13 @@ export default function ManageListingsPage() {
                             </p>
                             <p className="text-2xl font-bold">
                               {
-                                data.filter((l) => !(l.status === "available"))
-                                  .length
+                                data.filter(
+                                  (l) =>
+                                    !(
+                                      l.status === "available" ||
+                                      l.status === "rented"
+                                    ),
+                                ).length
                               }
                             </p>
                           </div>
@@ -287,8 +304,7 @@ export default function ManageListingsPage() {
                             </th>
                             <th className="p-4 font-medium text-sm">Status</th>
                             <th className="p-4 font-medium text-sm">Price</th>
-                            {/* <th className="p-4 font-medium text-sm">Views</th> */}
-                            <th className="p-4 font-medium text-sm text-right">
+                            <th className="p-4 font-medium text-sm text-center justify-center">
                               Actions
                             </th>
                           </tr>
@@ -302,13 +318,42 @@ export default function ManageListingsPage() {
                                 className="hover:bg-muted/5 transition-colors"
                               >
                                 <td className="p-4">
-                                  <div className="flex flex-col">
-                                    <span className="font-semibold">
+                                  <div className="flex flex-col gap-1 max-w-[16rem] sm:max-w-none">
+                                    {/* Title */}
+                                    <span
+                                      onClick={() =>
+                                        setExpandedId(
+                                          expandedId === listing.id
+                                            ? null
+                                            : listing.id,
+                                        )
+                                      }
+                                      className={`font-semibold text-sm sm:text-base leading-tight cursor-pointer
+                                        ${expandedId === listing.id ? "line-clamp-none" : "line-clamp-2"}
+                                      `}
+                                      title="Tap to expand"
+                                    >
                                       {listing.title}
                                     </span>
-                                    <span className="text-xs text-muted-foreground flex items-center mt-1">
-                                      <MapPin className="h-3 w-3 mr-1" />{" "}
-                                      {listing.location}
+
+                                    {/* Location */}
+                                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                      <MapPin className="h-3 w-3 shrink-0" />
+                                      <span
+                                        onClick={() =>
+                                          setExpandedId(
+                                            expandedId === listing.id
+                                              ? null
+                                              : listing.id,
+                                          )
+                                        }
+                                        className={`leading-tight cursor-pointer
+                                        ${expandedId === listing.id ? "line-clamp-none" : "line-clamp-1"}
+                                      `}
+                                        title="Tap to expand"
+                                      >
+                                        {listing.location}
+                                      </span>
                                     </span>
                                   </div>
                                 </td>
@@ -329,9 +374,17 @@ export default function ManageListingsPage() {
                                 <td className="p-4 font-mono text-sm">
                                   ${listing.price}
                                 </td>
-                                {/* <td className="p-4 text-sm text-muted-foreground">{listing.views}</td> */}
                                 <td className="p-4 text-right">
                                   <div className="flex items-center justify-end gap-2">
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-8 w-8"
+                                      onClick={() => handleViewClick(listing)}
+                                      title="View listing details"
+                                    >
+                                      <Eye className="h-4 w-4" />
+                                    </Button>
                                     <Button
                                       variant="ghost"
                                       size="icon"
@@ -415,6 +468,11 @@ export default function ManageListingsPage() {
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
         listingTitle={listingToDelete?.title || ""}
+      />
+      <ViewListingModal
+        isOpen={viewModalOpen}
+        onClose={() => setViewModalOpen(false)}
+        listing={listingToView}
       />
     </div>
   );

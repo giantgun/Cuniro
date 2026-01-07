@@ -164,15 +164,13 @@ export default function DashboardPage() {
       .map((escrow) => ({ ...escrow, role: "seller" })),
   ].sort((e1, e2) => {
     if (
-      calculateProgress(e1) === 100 &&
-      e1.status === "pending" &&
-      !(calculateProgress(e2) === 100 && e2.status === "pending")
+      (e1.status === "pending" || e1.status === "disputed") &&
+      !(e2.status === "pending" || e2.status === "disputed")
     )
       return -1; // 'a' passes, moves up
     if (
-      !(calculateProgress(e1) === 100 && e1.status === "pending") &&
-      calculateProgress(e2) === 100 &&
-      e2.status === "pending"
+      !(e1.status === "pending" || e1.status === "disputed") &&
+      (e2.status === "pending" || e1.status === "disputed")
     )
       return 1; // 'b' passes, moves up
     return 0; // same condition, no change
