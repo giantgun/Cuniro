@@ -10,22 +10,21 @@ export default function NotFound() {
         <CardContent className="pt-16 pb-12 text-center">
           <div className="mb-8 flex justify-center">
             <div className="relative">
-              <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
-                <AlertCircle className="h-12 w-12 text-primary" />
+              <div  className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
+                <span className="text-primary font-bold text-4xl md:text-5xl">404</span>
               </div>
               <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-destructive/20 flex items-center justify-center">
-                <span className="text-destructive font-bold text-sm">404</span>
+                <AlertCircle className="h-12 w-12 text-destructive" />
               </div>
             </div>
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-balance">
-            Listing Not Found
+          <h1 className="text-3xl md:text-4xl font-bold mb-4 text-balance">
+            Page Not Found
           </h1>
 
-          <p className="text-lg text-muted-foreground mb-8 text-pretty max-w-md mx-auto">
-            This housing listing doesn't exist or has been removed. The property
-            might have been rented or the landlord withdrew it.
+          <p className="text-md md:text-lg text-muted-foreground mb-8 text-pretty max-w-md mx-auto">
+            This housing page doesn't exist or has been removed.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
