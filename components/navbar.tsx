@@ -84,7 +84,7 @@ export function Navbar() {
                 ) : (
                   <Wallet className="mr-2 h-4 w-4" />
                 )}
-                {isConnecting ? "Connecting..." : "Connect Wallet"}
+                {isConnecting ? "Connecting" : "Connect Wallet"}
               </Button>
             )}
 
@@ -130,7 +130,7 @@ export function Navbar() {
                     ) : (
                       <Wallet className="mr-2 h-4 w-4" />
                     )}
-                    {isConnecting ? "Connecting..." : "Connect Wallet"}
+                    {isConnecting ? "Connecting" : "Connect Wallet"}
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
