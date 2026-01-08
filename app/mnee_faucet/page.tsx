@@ -96,7 +96,7 @@ export default function FaucetPage() {
                             <h2 className="text-sm font-semibold text-muted-foreground tracking-wide mb-3">Steps</h2>
                             <ul className="space-y-2 text-sm text-muted-foreground list-disc list-inside">
                                 <li>Change your wallet network to Sepolia testnet</li>
-                                <li>Obtain Sepolia ETH for gas(google cloud gives 0.01 for free)</li>
+                                <li>Obtain Sepolia ETH for gas (Google Cloud gives 0.01 for free)</li>
                                 <li className="">
                                     Import the mock MNEE tokens with this address:{" "}
                                     <code className="px-1 py-0.5 rounded bg-muted text-sm">
