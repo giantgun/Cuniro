@@ -69,6 +69,7 @@ export function ListingCard({ listing, dateNow }: ListingCardProps) {
             alt={listing.title}
             fill
             className="object-cover"
+            loading="eager"
           />
         </div>
 
