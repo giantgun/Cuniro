@@ -5,8 +5,6 @@ import { ListingCard } from "@/components/listing-card";
 import { useEffect, useState } from "react";
 import { supabase } from "@/hooks/supabase";
 import { Spinner } from "@/components/ui/spinner";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import { CreateListingModal } from "@/components/create-listing-modal";
 
 // Mock listings data - would come from API/database in production
@@ -15,7 +13,7 @@ const listings = [
     id: "1",
     title: "Modern Studio Near Campus",
     location: "Downtown University District",
-    price: "50", //850
+    price: "850", //850
     image: "/modern-studio-apartment.png",
     seller: "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
     description:
@@ -82,6 +80,42 @@ const listings = [
       "Large room in a 3-bedroom house with garden. Bike storage, off-street parking, and excellent bus connections to campus. Pet-friendly environment.",
     bedrooms: 3,
     bathrooms: 2,
+  },
+   {
+    id: "7",
+    title: "Budget Single Room Near Campus",
+    location: "South Campus Road",
+    price: "350",
+    image: "/budget-single-room.jpg",
+    seller: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+    description:
+      "Affordable single room ideal for students on a budget. Shared kitchen and bathroom. Walking distance to campus and local grocery stores.",
+    bedrooms: 1,
+    bathrooms: 1,
+  },
+  {
+    id: "8",
+    title: "Furnished Mini Flat",
+    location: "Central Student Hub",
+    price: "800",
+    image: "/furnished-mini-flat.jpg",
+    seller: "0x267be1C1D684F78cb4F6a176C4911b741E4Ffdc0",
+    description:
+      "Fully furnished mini flat with private kitchen and bathroom. Reliable power supply and water. Secure compound with gated access.",
+    bedrooms: 1,
+    bathrooms: 1,
+  },
+  {
+    id: "9",
+    title: "Off-Campus Student Lodge",
+    location: "Quiet Residential Area",
+    price: "450",
+    image: "/student-lodge-room.jpg",
+    seller: "0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2",
+    description:
+      "Well-maintained student lodge offering quiet and comfortable living. On-site security, shared common areas, and easy transport to campus.",
+    bedrooms: 1,
+    bathrooms: 1,
   },
 ];
 

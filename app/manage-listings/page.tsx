@@ -121,7 +121,6 @@ export default function ManageListingsPage() {
         toast({
           title: "Listing deleted",
           description: `"${listingToDelete.title}" has been removed.`,
-          variant: "success",
         });
       } catch (error: any) {
         console.error(error);

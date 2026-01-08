@@ -76,6 +76,7 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
   const timeoutDate = new Date(created.getTime() + escrow.timeout * 1000);
   const [showConfirmReceipt, setShowConfirmReceipt] = useState(false);
   const [showClaimFunds, setShowClaimFunds] = useState(false);
+  const isTestnet = process.env.NEXT_PUBLIC_NETWORK === "sepolia"
 
   const handleConfirmReceipt = () => {
     setShowConfirmReceipt(true);
@@ -297,7 +298,7 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
                   className="h-6 w-6 p-0"
                 >
                   <a
-                    href={`https://etherscan.io/address/${escrow.buyer_address}`}
+                    href={`https://${isTestnet ? "sepolia." : ""}etherscan.io/address/${escrow.buyer_address}`}
                     target="_blank"
                     rel="noreferrer noopener"
                   >
@@ -323,7 +324,7 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
                   className="h-6 w-6 p-0"
                 >
                   <a
-                    href={`https://etherscan.io/address/${escrow.seller_address}`}
+                    href={`https://${isTestnet ? "sepolia." : ""}etherscan.io/address/${escrow.seller_address}`}
                     target="_blank"
                     rel="noreferrer noopener"
                   >
@@ -369,7 +370,7 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
                 {isLoading ? (
                   <>
                     <Spinner size="sm" className="text-primary-foreground" />
-                    Processing...
+                    Processing
                   </>
                 ) : (
                   "Release Funds"
@@ -384,7 +385,7 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
                 {isLoading ? (
                   <>
                     <Spinner size="sm" className="text-secondary-foreground" />
-                    Processing...
+                    Processing
                   </>
                 ) : (
                   "Raise Dispute"
@@ -414,7 +415,7 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
                 {isLoading ? (
                   <>
                     <Spinner size="sm" className="text-primary-foreground" />
-                    Processing...
+                    Processing
                   </>
                 ) : (
                   "Claim Funds"
@@ -433,7 +434,7 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
               {isLoading ? (
                 <>
                   <Spinner size="sm" className="text-primary-foreground" />
-                  Processing...
+                  Processing
                 </>
               ) : (
                 "Resolve Dispute"
@@ -529,7 +530,7 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
               {isLoading ? (
                 <>
                   <Spinner size="sm" className="text-primary-foreground" />
-                  Submitting...
+                  Submitting
                 </>
               ) : (
                 "Submit Dispute"
@@ -567,14 +568,14 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
                 onClick={() => handleResolveDispute("buyer")}
                 disabled={!resolutionNote.trim() || isLoading}
               >
-                {isLoading ? "Processing..." : "Release to Buyer"}
+                {isLoading ? "Processing" : "Release to Buyer"}
               </Button>
               <Button
                 className="flex-1"
                 onClick={() => handleResolveDispute("seller")}
                 disabled={!resolutionNote.trim() || isLoading}
               >
-                {isLoading ? "Processing..." : "Release to Seller"}
+                {isLoading ? "Processing" : "Release to Seller"}
               </Button>
             </div>
           </div>

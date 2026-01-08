@@ -177,7 +177,7 @@ export default function HomePage() {
             <div className="flex items-center gap-2">
               <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary">
                 <span className="text-primary-foreground font-bold text-lg">
-                  U
+                  C
                 </span>
               </div>
               <span className="text-xl font-semibold">Cuniro</span>

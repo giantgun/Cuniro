@@ -108,7 +108,7 @@ export function ConfirmClaimFundsModal({
             disabled={!isComplete || isLoading}
             className="flex-1"
           >
-            {isLoading ? "Processing..." : "Claim Funds"}
+            {isLoading ? "Processing" : "Claim Funds"}
           </Button>
         </DialogFooter>
       </DialogContent>

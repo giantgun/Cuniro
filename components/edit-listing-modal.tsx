@@ -135,13 +135,15 @@ export function EditListingModal({
       } = await supabase.auth.getUser();
       if (userError) throw userError;
 
-      const { error } = await supabase.storage
+      const { data: imgData, error } = await supabase.storage
         .from(`${process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET!}`)
         .upload(`${user!.id}/listings/images/${uuid}`, data.photo, {
           upsert: true,
         });
 
       if (error) throw error;
+
+      console.log("img data ", imgData)
 
       console.log("Image uploaded to Supabase storage at URL:", imageUrl);
     }
@@ -370,7 +372,7 @@ export function EditListingModal({
               {isLoading ? (
                 <>
                   <Spinner size="sm" className="text-primary-foreground" />
-                  Saving...
+                  Saving
                 </>
               ) : (
                 "Save Changes"

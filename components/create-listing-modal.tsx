@@ -11,7 +11,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/hooks/supabase";
 import { useWallet } from "@/hooks/use-wallet";
-import { on } from "events";
 import { Spinner } from "./ui/spinner";
 
 interface CreateListingModalProps {
@@ -105,14 +104,25 @@ export function CreateListingModal({
         title: "Listing Created",
         description: "Your property has been listed successfully.",
       });
+      setFormData({
+        title: "",
+        location: "",
+        price: "",
+        deposit: "",
+        bedrooms: "",
+        bathrooms: "",
+        description: "",
+        contact: "",
+        photo: null,
+      })
 
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating listing:", error);
       toast({
         title: "Error",
         description:
-          "There was an issue creating your listing. Please try again.",
+          error.message || "There was an issue creating your listing. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -173,7 +183,6 @@ export function CreateListingModal({
               <div className="relative">
                 <Input
                   id="contact"
-                  type="tel"
                   placeholder="e.g. +234 801 234 5678"
                   value={formData.contact}
                   onChange={(e) => updateField("contact", e.target.value)}
@@ -303,7 +312,7 @@ export function CreateListingModal({
               {isLoading ? (
                 <>
                   <Spinner size="sm" className="text-primary-foreground" />
-                  Creating...
+                  Creating
                 </>
               ) : (
                 "Create Listing"

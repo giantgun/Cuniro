@@ -38,6 +38,7 @@ export function ListingCard({ listing }: ListingCardProps) {
   const [reloadFlag, setReloadFlag] = useState(false);
   const [editListing, setEditListing] = useState({});
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const isTestnet = process.env.NEXT_PUBLIC_NETWORK === "sepolia"
 
   const truncateSeller = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -122,7 +123,7 @@ export function ListingCard({ listing }: ListingCardProps) {
                   title="View on block explorer"
                 >
                   <a
-                    href={`https://etherscan.io/address/${listing.profiles.address}`}
+                    href={`https://${isTestnet ? "sepolia." : ""}etherscan.io/address/${listing.profiles.address}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -185,14 +186,14 @@ export function ListingCard({ listing }: ListingCardProps) {
         onClose={() => setShowViewModal(false)}
         listing={listing}
         onClickEdit={() => {
-                  localStorage.setItem(
-                    "listingToEdit",
-                    JSON.stringify(listing),
-                  );
-                  setEditListing(listing);
-                  setIsEditModalOpen(true);
-                }}
-        isOwner ={listing.profiles.address == account }
+          localStorage.setItem(
+            "listingToEdit",
+            JSON.stringify(listing),
+          );
+          setEditListing(listing);
+          setIsEditModalOpen(true);
+        }}
+        isOwner={listing.profiles.address == account}
       />
 
       <EditListingModal

@@ -63,7 +63,7 @@ export function DeleteListingModal({
             {isLoading ? (
               <>
                 <Spinner size="sm" className="text-secondary-foreground" />
-                Deleting...
+                Deleting
               </>
             ) : (
               "Delete Listing"

@@ -109,7 +109,7 @@ export function ConfirmReceiptModal({
             {isLoading ? (
               <>
                 <Spinner size="sm" className="text-primary-foreground" />
-                Processing...
+                Processing
               </>
             ) : (
               "Confirm Receipt"
