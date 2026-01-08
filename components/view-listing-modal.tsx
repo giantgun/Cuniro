@@ -60,7 +60,7 @@ export function ViewListingModal({
           {listing.image_url && (
             <div className="relative overflow-hidden border border-border">
               <img
-                src={listing.image_url || "/placeholder.svg"}
+                src={`${listing.image_url}?t=${Date()}`|| "/placeholder.svg"}
                 alt={listing.title}
                 className="w-full h-80 object-cover"
               />
