@@ -40,7 +40,7 @@ export function EditListingModal({
   onEdit,
 }: CreateListingModalProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const { userId } = useWallet();
+  const { autoDisconnect } = useWallet();
   const { toast } = useToast();
 
   const [existingImageUrl, setExistingImageUrl] = useState<string | null>(null);
@@ -126,6 +126,15 @@ export function EditListingModal({
   const editListing = async (data: ListingFormData) => {
     let imageUrl = existingImageUrl;
 
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+    if (userError) {
+      autoDisconnect();
+      throw userError;
+    }
+
     if (data.photo) {
       const parts = existingImageUrl?.split("/");
       const uuid = parts![parts!.length - 1];
@@ -166,8 +175,6 @@ export function EditListingModal({
       .eq("id", listin.id);
 
     if (listingError) throw listingError;
-
-    console.log("Updated listing:", payload);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -185,11 +192,11 @@ export function EditListingModal({
       });
 
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating listing:", error);
       toast({
         title: "Error",
-        description: "There was an issue updating your listing.",
+        description: error.message || "There was an issue updating your listing.",
         variant: "destructive",
       });
     } finally {
