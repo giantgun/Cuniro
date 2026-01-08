@@ -149,6 +149,6 @@
   /* Firefox */
   * {
     scrollbar-width: thin;
-    scrollbar-color: oklch(0.7 0.15 180) oklch(0.18 0.02 240);
+    scrollbar-color: oklch(0.6 0.06 184.7) oklch(0.18 0.02 240);
   }
 }
