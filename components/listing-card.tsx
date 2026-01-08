@@ -65,7 +65,7 @@ export function ListingCard({ listing, dateNow }: ListingCardProps) {
         )}
         <div className="relative h-48 w-full overflow-hidden">
           <Image
-            src={`${listing.image_url}?t=${dateNow}` || "/placeholder.svg"}
+            src={`${listing.image_url}` || "/placeholder.svg"}
             alt={listing.title}
             fill
             className="object-cover"
