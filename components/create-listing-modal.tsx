@@ -66,10 +66,10 @@ export function CreateListingModal({
     if (!data.photo) throw new Error("No image selected");
 
     const uuid = crypto.randomUUID();
-    const imageUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/unicrow/${userId}/listings/images/${uuid}`;
+    const imageUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET}/${userId}/listings/images/${uuid}`;
 
     const { data: uploadData, error } = await supabase.storage
-      .from("unicrow")
+      .from(`${process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET!}`)
       .upload(`${userId}/listings/images/${uuid}`, data.photo);
 
     if (error) throw error;
@@ -167,7 +167,7 @@ export function CreateListingModal({
 
             <div className="space-y-1.5">
               <Label>
-                Contact 
+                Contact
                 <span className="text-destructive">*</span>
               </Label>
               <div className="relative">

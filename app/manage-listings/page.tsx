@@ -101,7 +101,7 @@ export default function ManageListingsPage() {
         const imageId = parts[parts.length - 1];
 
         const { data, error: imageDeleteError } = await supabase.storage
-          .from("unicrow")
+          .from(`${process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET!}`)
           .remove([`${userId}/listings/images/${imageId}`]);
 
         if (imageDeleteError) {
@@ -365,7 +365,7 @@ export default function ManageListingsPage() {
                                     }
                                   >
                                     {listing.status == "available" ||
-                                    listing.status == "rented"
+                                      listing.status == "rented"
                                       ? `${listing.status.toUpperCase()}`
                                       : "ESCROWED"}
                                   </Badge>
@@ -473,14 +473,14 @@ export default function ManageListingsPage() {
         onClose={() => setViewModalOpen(false)}
         listing={listingToView}
         onClickEdit={() => {
-                  localStorage.setItem(
-                    "listingToEdit",
-                    JSON.stringify(listingToView),
-                  );
-                  setEditListing(listingToView);
-                  setIsEditModalOpen(true);
-                }}
-        isOwner ={(listingToView?.profiles?.address || null) == account }
+          localStorage.setItem(
+            "listingToEdit",
+            JSON.stringify(listingToView),
+          );
+          setEditListing(listingToView);
+          setIsEditModalOpen(true);
+        }}
+        isOwner={(listingToView?.profiles?.address || null) == account}
       />
     </div>
   );

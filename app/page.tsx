@@ -156,7 +156,7 @@ export default function HomePage() {
                 Ready to rent safely?
               </h2>
               <p className="text-xl text-muted-foreground mb-8">
-                Join thousands of students using UniCrow for secure housing
+                Join thousands of students using Cuniro for secure housing
                 transactions
               </p>
               <Button size="lg" asChild className="text-lg">
@@ -180,10 +180,10 @@ export default function HomePage() {
                   U
                 </span>
               </div>
-              <span className="text-xl font-semibold">UniCrow</span>
+              <span className="text-xl font-semibold">Cuniro</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              © 2026 UniCrow. Decentralized escrow for secure housing.
+              © 2026 Cuniro. Decentralized escrow for secure housing.
             </p>
           </div>
         </div>

@@ -136,7 +136,7 @@ export function EditListingModal({
       if (userError) throw userError;
 
       const { error } = await supabase.storage
-        .from("unicrow")
+        .from(`${process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET!}`)
         .upload(`${user!.id}/listings/images/${uuid}`, data.photo, {
           upsert: true,
         });
@@ -196,22 +196,22 @@ export function EditListingModal({
   };
 
   function isListingFormEqual(
-  a: ListingFormData,
-  b: ListingFormData
-): boolean {
-  return (
-    a.title === b.title &&
-    a.location === b.location &&
-    a.price === b.price &&
-    a.deposit === b.deposit &&
-    a.bedrooms === b.bedrooms &&
-    a.bathrooms === b.bathrooms &&
-    a.description === b.description &&
-    a.photo === b.photo &&
-    a.status === b.status &&
-    a.contact === b.contact
-  )
-}
+    a: ListingFormData,
+    b: ListingFormData
+  ): boolean {
+    return (
+      a.title === b.title &&
+      a.location === b.location &&
+      a.price === b.price &&
+      a.deposit === b.deposit &&
+      a.bedrooms === b.bedrooms &&
+      a.bathrooms === b.bathrooms &&
+      a.description === b.description &&
+      a.photo === b.photo &&
+      a.status === b.status &&
+      a.contact === b.contact
+    )
+  }
 
   return (
     <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">

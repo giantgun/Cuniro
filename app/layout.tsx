@@ -10,7 +10,7 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "UniCrow - Secure Student Housing Escrow",
+  title: "Cuniro - Secure Student Housing Escrow",
   description: "Pay for student housing safely with decentralized escrow",
   icons: {
     icon: [

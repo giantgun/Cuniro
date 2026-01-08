@@ -44,7 +44,7 @@ interface CreateEscrowModalProps {
 const defaultArbiters = [
   {
     address: "0x2515DDc5E06a139f8E9800fF270a28e57B7ff466",
-    name: "UniCrow Official Arbiter",
+    name: "Cuniro Official Arbiter",
   },
   {
     address: "0xa407C2829eB7A9bf7D015a5ddFC14f2a90C2ffcb",
