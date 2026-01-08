@@ -87,7 +87,7 @@ export function EditListingModal({
           description: listing.description,
           photo: null,
           status: listing.status,
-          contact: listing.contact
+          contact: listing.contact,
         });
 
         setCheckData({
@@ -100,7 +100,7 @@ export function EditListingModal({
           description: listing.description,
           photo: null,
           status: listing.status,
-          contact: listing.contact
+          contact: listing.contact,
         });
 
         setExistingImageUrl(listing.image_url ?? null);
@@ -152,7 +152,7 @@ export function EditListingModal({
 
       if (error) throw error;
 
-      console.log("img data ", imgData)
+      console.log("img data ", imgData);
 
       console.log("Image uploaded to Supabase storage at URL:", imageUrl);
     }
@@ -196,7 +196,8 @@ export function EditListingModal({
       console.error("Error updating listing:", error);
       toast({
         title: "Error",
-        description: error.message || "There was an issue updating your listing.",
+        description:
+          error.message || "There was an issue updating your listing.",
         variant: "destructive",
       });
     } finally {
@@ -204,10 +205,7 @@ export function EditListingModal({
     }
   };
 
-  function isListingFormEqual(
-    a: ListingFormData,
-    b: ListingFormData
-  ): boolean {
+  function isListingFormEqual(a: ListingFormData, b: ListingFormData): boolean {
     return (
       a.title === b.title &&
       a.location === b.location &&
@@ -219,7 +217,7 @@ export function EditListingModal({
       a.photo === b.photo &&
       a.status === b.status &&
       a.contact === b.contact
-    )
+    );
   }
 
   return (
@@ -375,7 +373,10 @@ export function EditListingModal({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading || isListingFormEqual(checkData, formData)}>
+            <Button
+              type="submit"
+              disabled={isLoading || isListingFormEqual(checkData, formData)}
+            >
               {isLoading ? (
                 <>
                   <Spinner size="sm" className="text-primary-foreground" />

@@ -8,7 +8,8 @@ interface ViewListingModalProps {
   onClose: () => void;
   listing: any;
   isOwner: boolean;
-  onClickEdit: () => void
+  onClickEdit: () => void;
+  dateNow: string;
 }
 
 export function ViewListingModal({
@@ -17,6 +18,7 @@ export function ViewListingModal({
   listing,
   isOwner,
   onClickEdit,
+  dateNow,
 }: ViewListingModalProps) {
   if (!isOpen) return null;
 
@@ -60,13 +62,15 @@ export function ViewListingModal({
           {listing.image_url && (
             <div className="relative overflow-hidden border border-border">
               <img
-                src={`${listing.image_url}?t=${Date()}`|| "/placeholder.svg"}
+                src={`${listing.image_url}?t=${dateNow}` || "/placeholder.svg"}
                 alt={listing.title}
                 className="w-full h-80 object-cover"
               />
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
                 <div className="text-white">
-                  <div className="text-3xl font-bold">${listing.price.toLocaleString()}</div>
+                  <div className="text-3xl font-bold">
+                    ${listing.price.toLocaleString()}
+                  </div>
                   <div className="text-sm text-white/80">per month</div>
                 </div>
               </div>
@@ -78,8 +82,7 @@ export function ViewListingModal({
             <div className="flex items-start justify-between gap-4 mb-3">
               <h3 className="text-2xl font-bold">{listing.title}</h3>
               <Badge className={`${getStatusColor(status)}`}>
-                {status.charAt(0).toUpperCase() +
-                  status.slice(1)}
+                {status.charAt(0).toUpperCase() + status.slice(1)}
               </Badge>
             </div>
 
@@ -107,8 +110,12 @@ export function ViewListingModal({
                     <Phone className="h-5 w-5 text-primary" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Contact</p>
-                    <p className="text-md font-semibold text-foreground mt-1">{listing.contact || "Not provided"}</p>
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      Contact
+                    </p>
+                    <p className="text-md font-semibold text-foreground mt-1">
+                      {listing.contact || "Not provided"}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -172,7 +179,7 @@ export function ViewListingModal({
 
             {/* Close Button */}
             <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
-              {(isOwner || isEditDisabled )&&
+              {(isOwner || isEditDisabled) && (
                 <Button
                   variant="ghost"
                   size="icon"
@@ -181,7 +188,7 @@ export function ViewListingModal({
                 >
                   <Edit2 className="h-4 w-4" />
                 </Button>
-              }
+              )}
               <Button
                 type="button"
                 variant="outline"

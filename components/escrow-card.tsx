@@ -76,7 +76,7 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
   const timeoutDate = new Date(created.getTime() + escrow.timeout * 1000);
   const [showConfirmReceipt, setShowConfirmReceipt] = useState(false);
   const [showClaimFunds, setShowClaimFunds] = useState(false);
-  const isTestnet = process.env.NEXT_PUBLIC_NETWORK === "sepolia"
+  const isTestnet = process.env.NEXT_PUBLIC_NETWORK === "sepolia";
 
   const handleConfirmReceipt = () => {
     setShowConfirmReceipt(true);

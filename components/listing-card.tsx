@@ -1,7 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { MapPin, Bed, Bath, ExternalLink, Settings, Eye, Phone } from "lucide-react";
+import {
+  MapPin,
+  Bed,
+  Bath,
+  ExternalLink,
+  Settings,
+  Eye,
+  Phone,
+} from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,14 +31,15 @@ interface Listing {
   description: string;
   bedrooms: number;
   bathrooms: number;
-  contact: string
+  contact: string;
 }
 
 interface ListingCardProps {
   listing: Listing;
+  dateNow: string;
 }
 
-export function ListingCard({ listing }: ListingCardProps) {
+export function ListingCard({ listing, dateNow }: ListingCardProps) {
   const [showEscrowModal, setShowEscrowModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const { account } = useWallet();
@@ -38,13 +47,13 @@ export function ListingCard({ listing }: ListingCardProps) {
   const [reloadFlag, setReloadFlag] = useState(false);
   const [editListing, setEditListing] = useState({});
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const isTestnet = process.env.NEXT_PUBLIC_NETWORK === "sepolia"
+  const isTestnet = process.env.NEXT_PUBLIC_NETWORK === "sepolia";
 
   const truncateSeller = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
-  useEffect(() => { }, [reloadFlag]);
+  useEffect(() => {}, [reloadFlag]);
 
   return (
     <>
@@ -58,7 +67,7 @@ export function ListingCard({ listing }: ListingCardProps) {
         )}
         <div className="relative h-48 w-full overflow-hidden">
           <Image
-            src={`${listing.image_url}?t=${Date()}` || "/placeholder.svg"}
+            src={`${listing.image_url}?t=${dateNow}` || "/placeholder.svg"}
             alt={listing.title}
             fill
             className="object-cover"
@@ -107,7 +116,6 @@ export function ListingCard({ listing }: ListingCardProps) {
                 </div>
               </div>
             </div>
-
 
             <div className="pt-2 border-t border-border">
               <div className="text-xs text-muted-foreground mb-1">Landlord</div>
@@ -186,14 +194,12 @@ export function ListingCard({ listing }: ListingCardProps) {
         onClose={() => setShowViewModal(false)}
         listing={listing}
         onClickEdit={() => {
-          localStorage.setItem(
-            "listingToEdit",
-            JSON.stringify(listing),
-          );
+          localStorage.setItem("listingToEdit", JSON.stringify(listing));
           setEditListing(listing);
           setIsEditModalOpen(true);
         }}
         isOwner={listing.profiles.address == account}
+        dateNow={dateNow}
       />
 
       <EditListingModal

@@ -129,14 +129,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
       const { error, data } = await supabase.auth.signInWithWeb3({
         chain: "ethereum",
-        statement:
-          "I accept the Terms of Service at https://cuniro.vercel.app",
+        statement: "I accept the Terms of Service at https://cuniro.vercel.app",
         wallet: accounts[0],
       });
 
-      if(error){
-        setAccount(null)
-        throw(error)
+      if (error) {
+        setAccount(null);
+        throw error;
       }
 
       if (data.user) {

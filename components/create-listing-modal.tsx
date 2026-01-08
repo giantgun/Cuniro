@@ -114,7 +114,7 @@ export function CreateListingModal({
         description: "",
         contact: "",
         photo: null,
-      })
+      });
 
       onClose();
     } catch (error: any) {
@@ -122,7 +122,8 @@ export function CreateListingModal({
       toast({
         title: "Error",
         description:
-          error.message || "There was an issue creating your listing. Please try again.",
+          error.message ||
+          "There was an issue creating your listing. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -191,7 +192,6 @@ export function CreateListingModal({
                 />
               </div>
             </div>
-
 
             <div>
               <div className="flex">

@@ -81,7 +81,7 @@ const listings = [
     bedrooms: 3,
     bathrooms: 2,
   },
-   {
+  {
     id: "7",
     title: "Budget Single Room Near Campus",
     location: "South Campus Road",
@@ -124,6 +124,7 @@ export default function ListingsPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [reloadFlag, setReloadFlag] = useState(false);
+  const dateNow = Date();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -181,7 +182,11 @@ export default function ListingsPage() {
             {data &&
               data[0] &&
               data.map((listing) => (
-                <ListingCard key={listing.id} listing={listing} />
+                <ListingCard
+                  key={listing.id}
+                  listing={listing}
+                  dateNow={dateNow}
+                />
               ))}
           </div>
         </div>

@@ -10,8 +10,10 @@ export default function NotFound() {
         <CardContent className="pt-16 pb-12 text-center">
           <div className="mb-8 flex justify-center">
             <div className="relative">
-              <div  className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-primary font-bold text-4xl md:text-5xl">404</span>
+              <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
+                <span className="text-primary font-bold text-4xl md:text-5xl">
+                  404
+                </span>
               </div>
               <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-destructive/20 flex items-center justify-center">
                 <AlertCircle className="h-12 w-12 text-destructive" />

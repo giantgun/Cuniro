@@ -585,7 +585,7 @@ export function useContract() {
         .or(
           `buyer_address.eq.${account},seller_address.eq.${account},arbiter_address.eq.${account}`,
         );
-        
+
       if (error) {
         throw error;
       }

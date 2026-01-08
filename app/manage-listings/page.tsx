@@ -70,6 +70,7 @@ export default function ManageListingsPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [listingToView, setListingToView] = useState<any>(null);
   const { toast } = useToast();
+  const dateNow = Date();
 
   const handleDeleteClick = (listing: any) => {
     setListingToDelete(listing);
@@ -87,7 +88,7 @@ export default function ManageListingsPage() {
   };
 
   const handleViewClick = (listing: (typeof initialListings)[0]) => {
-    console.log(listing)
+    console.log(listing);
     setListingToView(listing);
     setViewModalOpen(true);
   };
@@ -364,7 +365,7 @@ export default function ManageListingsPage() {
                                     }
                                   >
                                     {listing.status == "available" ||
-                                      listing.status == "rented"
+                                    listing.status == "rented"
                                       ? `${listing.status.toUpperCase()}`
                                       : "ESCROWED"}
                                   </Badge>
@@ -472,14 +473,12 @@ export default function ManageListingsPage() {
         onClose={() => setViewModalOpen(false)}
         listing={listingToView}
         onClickEdit={() => {
-          localStorage.setItem(
-            "listingToEdit",
-            JSON.stringify(listingToView),
-          );
+          localStorage.setItem("listingToEdit", JSON.stringify(listingToView));
           setEditListing(listingToView);
           setIsEditModalOpen(true);
         }}
         isOwner={(listingToView?.profiles?.address || null) == account}
+        dateNow={dateNow}
       />
     </div>
   );
