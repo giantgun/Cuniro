@@ -134,6 +134,11 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         wallet: accounts[0],
       });
 
+      if(error){
+        setAccount(null)
+        throw(error)
+      }
+
       if (data.user) {
         const userId = `${data.user.id}`;
         setUserId(userId);
