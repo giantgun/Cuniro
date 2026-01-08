@@ -13,7 +13,7 @@ export function useContract() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const mneeAddress = process.env.NEXT_PUBLIC_MNEE_ADDRESS!;
-  const mneeABI = erc20Abi;
+  const mneeABI = [...erc20Abi, "function mint(address to)"];
   const escrowManagerAddress = process.env.NEXT_PUBLIC_ESCROW_MANAGER_ADDRESS!;
   const escrowManagerABI = [
     // ────────────── Constants & Public Vars ──────────────
@@ -23,14 +23,14 @@ export function useContract() {
 
     // ────────────── Escrow Mapping Getter ──────────────
     "function escrows(uint256 id) view returns (" +
-      "address buyer," +
-      "address seller," +
-      "address arbiter," +
-      "uint256 amount," +
-      "uint64 createdAt," +
-      "uint64 timeout," +
-      "uint8 status" +
-      ")",
+    "address buyer," +
+    "address seller," +
+    "address arbiter," +
+    "uint256 amount," +
+    "uint64 createdAt," +
+    "uint64 timeout," +
+    "uint8 status" +
+    ")",
 
     // ────────────── Core Functions ──────────────
     "function createEscrow(address seller, address arbiter, uint256 amount, uint64 timeoutSeconds) returns (uint256)",
@@ -400,6 +400,21 @@ export function useContract() {
     [isConnected, account, toast],
   );
 
+  const mintMnee = async (address: string) => {
+
+
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+    const mneeContract = new Contract(
+      mneeAddress,
+      mneeABI,
+      signer,
+    );
+
+    const tx = await mneeContract.mint(address);
+    await tx.wait();
+  }
+
   // Resolve dispute function (arbiter only)
   const resolveDispute = useCallback(
     async (eId: number, sendToSeller: boolean, listingId: number) => {
@@ -607,5 +622,6 @@ export function useContract() {
     resolveDispute,
     getAllUserEscrows,
     recieveFunds,
+    mintMnee,
   };
 }

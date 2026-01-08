@@ -30,32 +30,6 @@ import { useToast } from "@/hooks/use-toast";
 import { DeleteListingModal } from "@/components/delete-listing-modal";
 import { ViewListingModal } from "@/components/view-listing-modal";
 
-// Mock landlord listings
-const initialListings = [
-  {
-    id: "1",
-    title: "Modern Studio Near Campus",
-    location: "Downtown University District",
-    price: "850",
-    status: "active",
-    views: 124,
-    rented: 0,
-    bedrooms: 1,
-    bathrooms: 1,
-  },
-  {
-    id: "4",
-    title: "Luxury 1BR with Balcony",
-    location: "City Center Premium",
-    price: "1200",
-    status: "rented",
-    views: 342,
-    rented: 1,
-    bedrooms: 1,
-    bathrooms: 1,
-  },
-];
-
 export default function ManageListingsPage() {
   const [editListing, setEditListing] = useState({});
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -87,7 +61,7 @@ export default function ManageListingsPage() {
     setDeleteModalOpen(true);
   };
 
-  const handleViewClick = (listing: (typeof initialListings)[0]) => {
+  const handleViewClick = (listing: any) => {
     console.log(listing);
     setListingToView(listing);
     setViewModalOpen(true);
