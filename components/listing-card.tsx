@@ -53,8 +53,6 @@ export function ListingCard({ listing, dateNow }: ListingCardProps) {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
-  useEffect(() => {}, [reloadFlag]);
-
   return (
     <>
       <Card className="overflow-hidden bg-card border-border hover:border-primary/50 transition-all duration-300 relative">
