@@ -24,7 +24,7 @@ export default function NotFound() {
           </h1>
 
           <p className="text-md md:text-lg text-muted-foreground mb-8 text-pretty max-w-md mx-auto">
-            This housing page doesn't exist or has been removed.
+            This page doesn't exist or has been removed.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
