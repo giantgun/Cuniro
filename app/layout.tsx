@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "@/components/ui/toaster";
 import { WalletProvider } from "@/hooks/use-wallet";
 import "./globals.css";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
@@ -43,6 +44,7 @@ export default function RootLayout({
           {children}
           <Analytics />
           <Toaster />
+          <SpeedInsights />
         </WalletProvider>
       </body>
     </html>
