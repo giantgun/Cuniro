@@ -23,14 +23,14 @@ export function useContract() {
 
     // ────────────── Escrow Mapping Getter ──────────────
     "function escrows(uint256 id) view returns (" +
-    "address buyer," +
-    "address seller," +
-    "address arbiter," +
-    "uint256 amount," +
-    "uint64 createdAt," +
-    "uint64 timeout," +
-    "uint8 status" +
-    ")",
+      "address buyer," +
+      "address seller," +
+      "address arbiter," +
+      "uint256 amount," +
+      "uint64 createdAt," +
+      "uint64 timeout," +
+      "uint8 status" +
+      ")",
 
     // ────────────── Core Functions ──────────────
     "function createEscrow(address seller, address arbiter, uint256 amount, uint64 timeoutSeconds) returns (uint256)",
@@ -401,19 +401,13 @@ export function useContract() {
   );
 
   const mintMnee = async (address: string) => {
-
-
     const provider = new ethers.BrowserProvider(window.ethereum);
     const signer = await provider.getSigner();
-    const mneeContract = new Contract(
-      mneeAddress,
-      mneeABI,
-      signer,
-    );
+    const mneeContract = new Contract(mneeAddress, mneeABI, signer);
 
     const tx = await mneeContract.mint(address);
     await tx.wait();
-  }
+  };
 
   // Resolve dispute function (arbiter only)
   const resolveDispute = useCallback(

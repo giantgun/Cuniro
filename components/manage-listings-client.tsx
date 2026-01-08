@@ -129,9 +129,8 @@ export default function ManageListingsClient({
           <Stat
             title="Escrowed"
             value={
-              data.filter(
-                (l) => !["available", "rented"].includes(l.status),
-              ).length
+              data.filter((l) => !["available", "rented"].includes(l.status))
+                .length
             }
             icon={Users}
           />
@@ -163,10 +162,13 @@ export default function ManageListingsClient({
           isOwner={listingToView?.profiles?.address === account}
           dateNow={dateNow}
           onClickEdit={() => {
-          localStorage.setItem("listingToEdit", JSON.stringify(listingToView));
-          setEditListing(listingToView);
-          setIsEditModalOpen(true);
-        }}
+            localStorage.setItem(
+              "listingToEdit",
+              JSON.stringify(listingToView),
+            );
+            setEditListing(listingToView);
+            setIsEditModalOpen(true);
+          }}
         />
       </div>
     </main>
