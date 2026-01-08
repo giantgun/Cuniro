@@ -44,7 +44,6 @@ export function ListingCard({ listing, dateNow }: ListingCardProps) {
   const [showViewModal, setShowViewModal] = useState(false);
   const { account } = useWallet();
   const router = useRouter();
-  const [reloadFlag, setReloadFlag] = useState(false);
   const [editListing, setEditListing] = useState({});
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const isTestnet = process.env.NEXT_PUBLIC_NETWORK === "sepolia";
@@ -184,7 +183,6 @@ export function ListingCard({ listing, dateNow }: ListingCardProps) {
         isOpen={showEscrowModal}
         onClose={() => setShowEscrowModal(false)}
         onCreate={() => {
-          setReloadFlag(!reloadFlag);
           router.push("/dashboard");
         }}
       />
@@ -208,7 +206,7 @@ export function ListingCard({ listing, dateNow }: ListingCardProps) {
           setEditListing({});
           setIsEditModalOpen(false);
         }}
-        onEdit={() => setReloadFlag(!reloadFlag)}
+        onEdit={() => router.push("/listings")}
       />
     </>
   );

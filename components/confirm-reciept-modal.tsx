@@ -18,7 +18,7 @@ import { Spinner } from "./ui/spinner";
 interface ConfirmReceiptModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: () => Promise<void>;
   listingTitle: string;
   isLoading?: boolean;
 }
@@ -35,9 +35,9 @@ export function ConfirmReceiptModal({
 
   const isComplete = keysReceived && movedIn;
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (isComplete) {
-      onConfirm();
+      await onConfirm();
       setKeysReceived(false);
       setMovedIn(false);
     }

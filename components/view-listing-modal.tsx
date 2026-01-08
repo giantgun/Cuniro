@@ -2,6 +2,7 @@
 import { X, MapPin, Bed, Bath, Lock, Phone, Edit2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useEffect, useState } from "react";
 
 interface ViewListingModalProps {
   isOpen: boolean;
@@ -22,6 +23,7 @@ export function ViewListingModal({
 }: ViewListingModalProps) {
   if (!isOpen) return null;
 
+  const [reloadFlag, setReloadFlag] = useState(false);
   const getStatusColor = (status: string) => {
     switch (status) {
       case "available":
@@ -41,6 +43,11 @@ export function ViewListingModal({
     listing.status === "available" || listing.status === "rented"
       ? listing.status
       : "escrowed";
+
+  useEffect(() => {}, [reloadFlag]);
+  const onEdit = () => {
+    setReloadFlag(!reloadFlag);
+  };
 
   return (
     <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">

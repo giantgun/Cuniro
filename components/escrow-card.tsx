@@ -34,6 +34,7 @@ import { useContract } from "@/hooks/use-contract";
 import { Spinner } from "./ui/spinner";
 import { ConfirmReceiptModal } from "./confirm-reciept-modal";
 import { ConfirmClaimFundsModal } from "./confirm-claim-funds";
+import { useWallet } from "@/hooks/use-wallet";
 
 export interface Escrow {
   id: string;
@@ -65,6 +66,7 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
   const [showResolve, setShowResolve] = useState(false);
   const [disputeReason, setDisputeReason] = useState("");
   const [resolutionNote, setResolutionNote] = useState("");
+  const { account } = useWallet();
   const {
     confirmReceipt,
     raiseDispute,
@@ -205,9 +207,6 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
                   <StatusIcon className="h-3 w-3 mr-1" />
                   {status.label}
                 </Badge>
-                <Badge variant="outline" className="capitalize">
-                  {escrow.role}
-                </Badge>
               </div>
               <h3 className="text-xl font-semibold mb-1">
                 {escrow.listing_title}
@@ -254,12 +253,18 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
                   <Progress value={progress} className="h-2" />
                 </>
               )}
-              {minutesLeft == 0 && (
-                <div className="flex items-center gap-2 text-xs text-green-500 font-medium mt-2">
-                  <CheckCircle className="h-4 w-4" />
-                  Ready to claim
-                </div>
-              )}
+              {minutesLeft == 0 &&
+                (account !== escrow.buyer_address ? (
+                  <div className="flex items-center gap-1 text-md text-green-500 font-medium mt-2">
+                    <CheckCircle className="h-4 w-4" />
+                    Ready to claim
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1 text-md text-yellow-500 font-medium mt-2">
+                    <AlertCircle className="h-4 w-4" />
+                    Landlord can claim funds
+                  </div>
+                ))}
             </div>
           )}
 
@@ -568,14 +573,28 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
                 onClick={() => handleResolveDispute("buyer")}
                 disabled={!resolutionNote.trim() || isLoading}
               >
-                {isLoading ? "Processing" : "Release to Buyer"}
+                {isLoading ? (
+                  <>
+                    <Spinner size="sm" className="text-primary" />
+                    Processing
+                  </>
+                ) : (
+                  "Release to Buyer"
+                )}
               </Button>
               <Button
                 className="flex-1"
                 onClick={() => handleResolveDispute("seller")}
                 disabled={!resolutionNote.trim() || isLoading}
               >
-                {isLoading ? "Processing" : "Release to Seller"}
+                {isLoading ? (
+                  <>
+                    <Spinner size="sm" className="text-primary-foreground" />
+                    Processing
+                  </>
+                ) : (
+                  "Release to Seller"
+                )}
               </Button>
             </div>
           </div>

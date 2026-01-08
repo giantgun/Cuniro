@@ -418,7 +418,7 @@ export function CreateEscrowModal({
               {isLoading ? (
                 <>
                   <Spinner size="sm" className="text-primary-foreground" />
-                  Creating Escrow...
+                  Creating Escrow
                 </>
               ) : (
                 "Create Escrow"

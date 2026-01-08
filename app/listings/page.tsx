@@ -1,6 +1,5 @@
 import { Navbar } from "@/components/navbar";
 import { ListingCard } from "@/components/listing-card";
-import { CreateListingModal } from "@/components/create-listing-modal";
 import { supabase } from "@/hooks/supabase";
 
 async function getListings() {

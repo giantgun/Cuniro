@@ -9,7 +9,7 @@ import { erc20Abi } from "abitype/abis";
 import { supabase } from "./supabase";
 
 export function useContract() {
-  const { account, isConnected } = useWallet();
+  const { account, isConnected, autoDisconnect } = useWallet();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const mneeAddress = process.env.NEXT_PUBLIC_MNEE_ADDRESS!;
@@ -46,6 +46,17 @@ export function useContract() {
     "event Arbitrated(uint256 indexed id, bool releasedToSeller)",
     "event AutoReleased(uint256 indexed id)",
   ];
+
+  const confirmSupaAuth = async () => {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+    if (userError) {
+      autoDisconnect();
+      throw userError;
+    }
+  };
 
   // Create escrow function
   const createEscrow = useCallback(
@@ -173,19 +184,6 @@ export function useContract() {
               console.error("Error inserting escrow into Supabase:", error);
               throw error;
             }
-
-            const { error: listingError } = await supabase
-              .from("listings")
-              .update({ status: "escrowed" })
-              .eq("id", Number(listingId));
-
-            if (listingError) {
-              console.error(
-                "Error updating listing status in Supabase:",
-                listingError,
-              );
-              throw listingError;
-            }
           }
         }
 
@@ -225,6 +223,7 @@ export function useContract() {
 
       setIsLoading(true);
       try {
+        await confirmSupaAuth();
         const provider = new ethers.BrowserProvider(window.ethereum);
         const signer = await provider.getSigner();
         const escrowManagerContract = new Contract(
@@ -260,16 +259,6 @@ export function useContract() {
             if (error) {
               console.error("Error updating listing status:", error);
               throw error;
-            }
-
-            const { error: updateError } = await supabase
-              .from("listings")
-              .update({ status: "rented" })
-              .eq("id", listingId);
-
-            if (updateError) {
-              console.error("Error updating listing status:", updateError);
-              throw updateError;
             }
           }
         } else {
@@ -313,6 +302,7 @@ export function useContract() {
 
       setIsLoading(true);
       try {
+        await confirmSupaAuth();
         const provider = new ethers.BrowserProvider(window.ethereum);
         const signer = await provider.getSigner();
         const escrowManagerContract = new Contract(
@@ -348,16 +338,6 @@ export function useContract() {
             if (error) {
               console.error("Error updating listing status:", error);
               throw error;
-            }
-
-            const { error: updateError } = await supabase
-              .from("listings")
-              .update({ status: "disputed" })
-              .eq("id", listingId);
-
-            if (updateError) {
-              console.error("Error updating listing status:", updateError);
-              throw updateError;
             }
           } else {
             throw new Error(
@@ -423,6 +403,7 @@ export function useContract() {
 
       setIsLoading(true);
       try {
+        await confirmSupaAuth();
         const provider = new ethers.BrowserProvider(window.ethereum);
         const signer = await provider.getSigner();
         const escrowManagerContract = new Contract(
@@ -458,16 +439,6 @@ export function useContract() {
             if (error) {
               console.error("Error updating listing status:", error);
               throw error;
-            }
-
-            const { error: updateError } = await supabase
-              .from("listings")
-              .update({ status: `${sendToSeller ? "rented" : "available"}` })
-              .eq("id", listingId);
-
-            if (updateError) {
-              console.error("Error updating listing status:", updateError);
-              throw updateError;
             }
           } else {
             throw new Error(
@@ -511,6 +482,7 @@ export function useContract() {
 
       setIsLoading(true);
       try {
+        await confirmSupaAuth();
         const provider = new ethers.BrowserProvider(window.ethereum);
         const signer = await provider.getSigner();
         const escrowManagerContract = new Contract(
