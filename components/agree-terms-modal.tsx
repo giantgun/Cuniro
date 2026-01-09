@@ -45,7 +45,7 @@ export function AgreeTermsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-card border-border overflow-y-auto">
+      <DialogContent className="sm:max-w-md bg-card border-border max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-4">
             <AlertCircle className="h-6 w-6 text-primary" />
@@ -65,7 +65,7 @@ export function AgreeTermsModal({
             <h3 className="text-sm font-semibold mb-2">
               Rental Terms & Conditions
             </h3>
-            <div className="text-sm text-muted-foreground whitespace-pre-wrap max-h-40 overflow-y-auto">
+            <div className="text-sm text-muted-foreground whitespace-pre-wrap max-h-32 overflow-y-auto">
               {terms}
             </div>
           </div>

@@ -290,7 +290,7 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <User className="h-3 w-3" />
-                <span>Buyer</span>
+                <span>Tenant</span>
               </div>
               <div className="flex items-center justify-between">
                 <code className="text-xs bg-secondary px-2 py-1 rounded">
@@ -316,7 +316,7 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <User className="h-3 w-3" />
-                <span>Seller</span>
+                <span>Landlord/Agent</span>
               </div>
               <div className="flex items-center justify-between">
                 <code className="text-xs bg-secondary px-2 py-1 rounded">
@@ -345,10 +345,28 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
                 <span>Arbiter</span>
               </div>
               <div>
+                <div className="flex items-center justify-between">
+                  <div>
                 <div className="text-xs font-medium">{escrow.arbiter_name}</div>
-                <code className="text-xs text-muted-foreground">
-                  {truncateAddress(escrow.arbiter_address)}
-                </code>
+                  <code className="text-xs text-muted-foreground">
+                    {truncateAddress(escrow.arbiter_address)}
+                  </code>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    asChild
+                    className="h-6 w-6 p-0"
+                  >
+                    <a
+                      href={`https://${isTestnet ? "sepolia." : ""}etherscan.io/address/${escrow.seller_address}`}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                    </a>
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
@@ -465,9 +483,15 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
               </p>
             </div>
             <div>
-              <h4 className="text-sm font-medium mb-1">Terms & Conditions</h4>
+              <h4 className="text-sm font-medium mb-1">Landlord's terms</h4>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                {escrow.terms}
+                {escrow.listings.terms}
+              </p>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium mb-1">Tenant's terms</h4>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {escrow.listings.terms}
               </p>
             </div>
             <div className="grid grid-cols-2 gap-4 text-sm">
