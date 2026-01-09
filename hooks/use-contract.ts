@@ -118,7 +118,13 @@ export function useContract() {
             ethers.parseUnits(`${amount}`, 18),
           );
           await approveTx.wait();
+          toast({
+          title: "Your Escrow will be created soon.",
+          description: `Your transaction is being confirmed.`,
+        });
         }
+
+
 
         console.log("Creating escrow with:", {
           seller,
