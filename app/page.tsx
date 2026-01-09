@@ -24,7 +24,7 @@ export default function HomePage() {
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto text-pretty">
               Trust-minimized housing payments that protect both tenants and
-              landlords through blockchain technology
+              landlords through MNEE stable coin
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
               <Button size="lg" asChild className="text-lg">
@@ -78,7 +78,7 @@ export default function HomePage() {
                 </div>
                 <h3 className="text-xl font-semibold mb-3">Create Escrow</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Lock your payment in a smart contract escrow with a neutral
+                  Lock your first rent in a smart contract escrow with a neutral
                   arbiter. Your funds are protected until move-in.
                 </p>
               </CardContent>
