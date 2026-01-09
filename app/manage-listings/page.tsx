@@ -152,7 +152,7 @@ export default function ManageListingsPage() {
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
 
-      <main className="pt-24 pb-20 px-4">
+      <main className="pt-24 pb-20 lg:px-8 md:px-6 px-4">
         <div className="container mx-auto max-w-7xl">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
             <div>

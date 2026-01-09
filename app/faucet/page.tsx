@@ -2,7 +2,7 @@
 
 import type React from "react";
 import { useState } from "react";
-import { Droplet } from "lucide-react";
+import { Droplet, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useWallet } from "@/hooks/use-wallet";
 import { useToast } from "@/hooks/use-toast";
@@ -100,11 +100,27 @@ export default function FaucetPage() {
               <ul className="space-y-2 text-sm text-muted-foreground list-disc list-inside">
                 <li>Change your wallet network to Sepolia testnet</li>
                 <li>
-                  Obtain Sepolia ETH for gas (Google Cloud gives 0.01 for free)
+                  Obtain Sepolia ETH for gas (Google Cloud gives some for free)
+                  <span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      asChild
+                      className="h-6 w-6 p-0 text-foreground"
+                    >
+                      <a
+                        href={`https://cloud.google.com/application/web3/faucet/ethereum/sepolia`}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                    </Button>
+                  </span>
                 </li>
                 <li className="">
                   Import the mock MNEE tokens with this address:{" "}
-                  <code className="px-1 py-0.5 rounded bg-muted text-sm">
+                  <code className="px-1 py-0.5 rounded bg-muted text-sm text-foreground">
                     {`${process.env.NEXT_PUBLIC_MNEE_ADDRESS?.slice(0, 6)}...${process.env.NEXT_PUBLIC_MNEE_ADDRESS?.slice(-4)}`}
                   </code>
                   <span>
@@ -121,7 +137,7 @@ export default function FaucetPage() {
                         }
                       }}
                       id="copy-indicator"
-                      className="text-xs px-2 py-1 rounded border hover:bg-muted transition"
+                      className="text-xs px-2 py-1 rounded bg-transparent border hover:bg-muted transition text-foreground"
                     >
                       Copy address
                     </button>

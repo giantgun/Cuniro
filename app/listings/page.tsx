@@ -24,7 +24,7 @@ export default async function ListingsPage() {
     <div className="min-h-screen">
       <Navbar />
 
-      <div className="pt-24 pb-20 px-4">
+      <div className="pt-24 pb-20 lg:px-8 md:px-6 px-4">
         <div className="container mx-auto max-w-7xl">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
             <div>

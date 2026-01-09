@@ -25,7 +25,7 @@ export function Navbar() {
 
   return (
     <nav className="fixed top-0 w-full z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      <div className="container mx-auto px-4">
+      <div className="lg:px-8 md:px-6 px-4 mx-auto">
         <div className="flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary">
@@ -60,6 +60,12 @@ export function Navbar() {
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Manage Listings
+            </Link>
+            <Link
+              href="/faucet"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Faucet
             </Link>
           </div>
 
@@ -111,6 +117,9 @@ export function Navbar() {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className="md:hidden">
                   <Link href="/manage-listings">Manage Listings</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="md:hidden">
+                  <Link href="/faucet">Faucet</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="md:hidden" />
                 {isConnected ? (
