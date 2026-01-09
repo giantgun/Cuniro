@@ -119,7 +119,7 @@ export default function FaucetPage() {
                   </span>
                 </li>
                 <li className="">
-                  Import the mock MNEE tokens with this address:{" "}
+                  Import the mock token in your wallet with:{" "}
                   <code className="px-1 py-0.5 rounded bg-muted text-sm text-foreground">
                     {`${process.env.NEXT_PUBLIC_MNEE_ADDRESS?.slice(0, 6)}...${process.env.NEXT_PUBLIC_MNEE_ADDRESS?.slice(-4)}`}
                   </code>
