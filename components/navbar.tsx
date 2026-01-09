@@ -76,7 +76,7 @@ export function Navbar() {
                 onClick={disconnect}
                 className="hidden sm:flex bg-transparent"
               >
-                <Wallet className="mr-2 h-4 w-4" />
+                <Wallet className="mr-1 h-4 w-4" />
                 {truncateAddress(account!)}
               </Button>
             ) : (
@@ -86,9 +86,9 @@ export function Navbar() {
                 className="hidden sm:flex"
               >
                 {isConnecting ? (
-                  <Spinner size="sm" className="mr-2 text-primary-foreground" />
+                  <Spinner size="sm" className="mr-1 text-primary-foreground" />
                 ) : (
-                  <Wallet className="mr-2 h-4 w-4" />
+                  <Wallet className="mr-1 h-4 w-4" />
                 )}
                 {isConnecting ? "Connecting" : "Connect Wallet"}
               </Button>
@@ -125,7 +125,7 @@ export function Navbar() {
                 {isConnected ? (
                   <>
                     <DropdownMenuItem className="sm:hidden">
-                      <Wallet className="mr-2 h-4 w-4" />
+                      <Wallet className="mr-1 h-4 w-4" />
                       {truncateAddress(account!)}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={disconnect}>
@@ -135,9 +135,9 @@ export function Navbar() {
                 ) : (
                   <DropdownMenuItem onClick={connect} disabled={isConnecting}>
                     {isConnecting ? (
-                      <Spinner size="sm" className="mr-2" />
+                      <Spinner size="sm" className="mr-1" />
                     ) : (
-                      <Wallet className="mr-2 h-4 w-4" />
+                      <Wallet className="mr-1 h-4 w-4" />
                     )}
                     {isConnecting ? "Connecting" : "Connect Wallet"}
                   </DropdownMenuItem>
