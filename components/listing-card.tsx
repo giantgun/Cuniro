@@ -95,9 +95,9 @@ export function ListingCard({ listing, dateNow }: ListingCardProps) {
               </div>
             </div>
 
-            <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+            {/* <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
               {listing.description}
-            </p>
+            </p> */}
 
             <div className="flex justify-between pt-2">
               <div>
@@ -149,7 +149,7 @@ export function ListingCard({ listing, dateNow }: ListingCardProps) {
               onClick={() => setShowViewModal(true)}
             >
               <Eye className="h-4 w-4 mr-1" />
-              View
+              Details
             </Button>
 
             {listing.profiles.address == account ? (
