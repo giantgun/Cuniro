@@ -29,6 +29,7 @@ import { EditListingModal } from "@/components/edit-listing-modal";
 import { useToast } from "@/hooks/use-toast";
 import { DeleteListingModal } from "@/components/delete-listing-modal";
 import { ViewListingModal } from "@/components/view-listing-modal";
+import { useContract } from "@/hooks/use-contract";
 
 export default function ManageListingsPage() {
   const [editListing, setEditListing] = useState({});
@@ -43,6 +44,7 @@ export default function ManageListingsPage() {
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [listingToView, setListingToView] = useState<any>(null);
+  const { confirmSupaAuth } = useContract();
   const { toast } = useToast();
   const dateNow = Date();
 

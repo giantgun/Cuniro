@@ -28,6 +28,7 @@ interface ListingFormData {
   bathrooms: string;
   description: string;
   contact: string;
+  terms: string;
   photo: File | null;
 }
 
@@ -37,8 +38,7 @@ export function CreateListingModal({
   onCreate,
 }: CreateListingModalProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const { userId } = useWallet();
-
+  const { autoDisconnect } = useWallet();
   const [formData, setFormData] = useState<ListingFormData>({
     title: "",
     location: "",
@@ -48,6 +48,7 @@ export function CreateListingModal({
     bathrooms: "",
     description: "",
     contact: "",
+    terms: "",
     photo: null,
   });
 
@@ -64,12 +65,21 @@ export function CreateListingModal({
   const createListing = async (data: ListingFormData) => {
     if (!data.photo) throw new Error("No image selected");
 
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+    if (userError) {
+      autoDisconnect();
+      throw userError;
+    }
+
     const uuid = crypto.randomUUID();
-    const imageUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET}/${userId}/listings/images/${uuid}`;
+    const imageUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET}/${user!.id}/listings/images/${uuid}`;
 
     const { data: uploadData, error } = await supabase.storage
       .from(`${process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET!}`)
-      .upload(`${userId}/listings/images/${uuid}`, data.photo);
+      .upload(`${user!.id}/listings/images/${uuid}`, data.photo);
 
     if (error) throw error;
 
@@ -83,6 +93,7 @@ export function CreateListingModal({
       image_url: imageUrl,
       contact: data.contact,
       status: "available",
+      terms: data.terms,
     };
 
     const { error: listingError } = await supabase
@@ -113,6 +124,7 @@ export function CreateListingModal({
         bathrooms: "",
         description: "",
         contact: "",
+        terms: "",
         photo: null,
       });
 
@@ -133,7 +145,7 @@ export function CreateListingModal({
 
   return (
     <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-card border border-border rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-card border border-border rounded-lg max-w-2xl w-full max-h-[85vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-card z-10">
           <div>
             <h2 className="text-2xl font-bold">Add New Listing</h2>
@@ -249,6 +261,27 @@ export function CreateListingModal({
                 value={formData.description}
                 onChange={(e) => updateField("description", e.target.value)}
                 required
+                className="mt-1.5 h-32"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="terms" className="text-sm font-medium">
+                Terms & Conditions
+                <span className="text-destructive ml-1">*</span>
+              </Label>
+              <p className="text-xs text-muted-foreground mt-1 mb-2 leading-relaxed">
+                Describe the rental terms and landlord conditions. This
+                information will help the arbiter make decisions in case of
+                disputes.
+              </p>
+              <Textarea
+                id="terms"
+                placeholder="e.g No smoking, no subletting, quiet hours enforced..."
+                value={formData.terms}
+                onChange={(e) => updateField("terms", e.target.value)}
+                required
+                rows={5}
                 className="mt-1.5 h-32"
               />
             </div>

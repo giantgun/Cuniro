@@ -119,12 +119,10 @@ export function useContract() {
           );
           await approveTx.wait();
           toast({
-          title: "Your Escrow will be created soon.",
-          description: `Your transaction is being confirmed.`,
-        });
+            title: "Your Escrow will be created soon.",
+            description: `Your transaction is being confirmed.`,
+          });
         }
-
-
 
         console.log("Creating escrow with:", {
           seller,
@@ -595,5 +593,6 @@ export function useContract() {
     getAllUserEscrows,
     recieveFunds,
     mintMnee,
+    confirmSupaAuth,
   };
 }

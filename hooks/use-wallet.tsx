@@ -131,7 +131,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         chain: "ethereum",
         statement: "I accept the Terms of Service at https://cuniro.vercel.app",
         wallet: accounts[0],
-        redirectTo: process.env.NEXT_PUBLIC_IS_DEV ? "http://localhost:3000" :"https://cuniro.vercel.app"
       });
 
       if (error) {

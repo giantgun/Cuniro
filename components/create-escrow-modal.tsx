@@ -20,18 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useWallet } from "@/hooks/use-wallet";
 import { useContract } from "@/hooks/use-contract";
 import { Spinner } from "./ui/spinner";
-
-interface Listing {
-  id: string;
-  title: string;
-  location: string;
-  price: string;
-  image: string;
-  seller: string;
-  description: string;
-  bedrooms: number;
-  bathrooms: number;
-}
+import { AgreeTermsModal } from "./agree-terms-modal";
 
 interface CreateEscrowModalProps {
   listing: any;
@@ -73,6 +62,7 @@ export function CreateEscrowModal({
   const [showAddArbiterModal, setShowAddArbiterModal] = useState(false);
   const [newArbiterName, setNewArbiterName] = useState("");
   const [newArbiterAddress, setNewArbiterAddress] = useState("");
+  const [showAgreeTermsModal, setShowAgreeTermsModal] = useState(false);
 
   if (!isOpen) return null;
 
@@ -138,6 +128,19 @@ export function CreateEscrowModal({
       return;
     }
 
+    setShowAgreeTermsModal(true);
+  };
+
+  const handleAgreeTerms = async () => {
+    if (!isConnected) {
+      toast({
+        variant: "destructive",
+        title: "Wallet Not Connected",
+        description: "Please connect your wallet to create an escrow",
+      });
+      return;
+    }
+
     if (selectedArbiter == listing.profiles.address) {
       toast({
         variant: "destructive",
@@ -168,7 +171,7 @@ export function CreateEscrowModal({
   return (
     <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
       <div
-        className="bg-card border border-border rounded-lg max-w-2xl w-full my-8 overflow-y-auto max-h-[90vh]"
+        className="bg-card border border-border rounded-lg max-w-2xl w-full my-8 overflow-y-auto max-h-[85vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -267,12 +270,12 @@ export function CreateEscrowModal({
               </p>
               <Textarea
                 id="terms"
-                placeholder="Example: First month's rent as deposit. Move-in date: Jan 15, 2025. Apartment must be as shown in photos. WiFi and utilities included. No smoking policy..."
+                placeholder="e.g Deposit required, no smoking, utilities included..."
                 value={terms}
                 onChange={(e) => setTerms(e.target.value)}
                 required
                 rows={5}
-                className="mt-1.5 resize-none"
+                className="mt-1.5 h-32"
               />
             </div>
 
@@ -427,6 +430,16 @@ export function CreateEscrowModal({
           </div>
         </form>
       </div>
+
+      <AgreeTermsModal
+        isOpen={showAgreeTermsModal}
+        onClose={() => setShowAgreeTermsModal(false)}
+        onAgree={handleAgreeTerms}
+        terms={listing.terms}
+        listingTitle={listing.title}
+        isLoading={isLoading}
+      />
+
       {showAddArbiterModal && (
         <div className="fixed inset-0 z-[60] bg-background/80 backdrop-blur-sm flex m-auto justify-center p-2 lg:p-4">
           <Card className="w-full max-w-sm h-92">

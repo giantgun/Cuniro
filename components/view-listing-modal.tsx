@@ -51,7 +51,7 @@ export function ViewListingModal({
 
   return (
     <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-card border border-border rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-card border border-border rounded-lg max-w-2xl w-full max-h-[85vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-card z-10">
           <div>
             <h2 className="text-2xl font-bold">View Listing</h2>
@@ -167,6 +167,15 @@ export function ViewListingModal({
               </h4>
               <p className="text-foreground leading-relaxed whitespace-pre-wrap">
                 {listing.description}
+              </p>
+            </div>
+
+            <div className="py-6">
+              <h4 className="text-sm font-semibold text-muted-foreground mb-3">
+                Rental Terms & Conditions
+              </h4>
+              <p className="text-foreground leading-relaxed whitespace-pre-wrap">
+                {listing.terms}
               </p>
             </div>
 

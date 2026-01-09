@@ -31,6 +31,7 @@ interface ListingFormData {
   photo: File | null;
   status: string;
   contact: string;
+  terms: string;
 }
 
 export function EditListingModal({
@@ -52,6 +53,7 @@ export function EditListingModal({
     bedrooms: listin!.bedrooms,
     bathrooms: listin!.bathrooms,
     description: listin.description,
+    terms: listin.terms,
     photo: null,
     status: "",
     contact: "",
@@ -65,6 +67,7 @@ export function EditListingModal({
     bedrooms: listin!.bedrooms,
     bathrooms: listin!.bathrooms,
     description: listin.description,
+    terms: listin.terms,
     photo: null,
     status: "",
     contact: "",
@@ -85,6 +88,7 @@ export function EditListingModal({
           bedrooms: listing.bedrooms,
           bathrooms: listing.bathrooms,
           description: listing.description,
+          terms: listing.terms,
           photo: null,
           status: listing.status,
           contact: listing.contact,
@@ -98,6 +102,7 @@ export function EditListingModal({
           bedrooms: listing.bedrooms,
           bathrooms: listing.bathrooms,
           description: listing.description,
+          terms: listing.terms,
           photo: null,
           status: listing.status,
           contact: listing.contact,
@@ -167,6 +172,7 @@ export function EditListingModal({
       image_url: imageUrl,
       status: data.status,
       contact: data.contact,
+      terms: data.terms,
     };
 
     const { error: listingError } = await supabase
@@ -216,13 +222,14 @@ export function EditListingModal({
       a.description === b.description &&
       a.photo === b.photo &&
       a.status === b.status &&
-      a.contact === b.contact
+      a.contact === b.contact &&
+      a.terms === b.terms
     );
   }
 
   return (
     <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-card border border-border rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-card border border-border rounded-lg max-w-2xl w-full max-h-[85vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-border sticky top-0 bg-card z-10">
           <div>
             <h2 className="text-2xl font-bold">Edit Listing</h2>
@@ -316,6 +323,27 @@ export function EditListingModal({
                 onChange={(e) => updateField("description", e.target.value)}
                 required
                 className="mt-1.5 h-32"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="terms" className="text-sm font-medium">
+                Terms & Conditions
+                <span className="text-destructive ml-1">*</span>
+              </Label>
+              <p className="text-xs text-muted-foreground mt-1 mb-2 leading-relaxed">
+                Describe the rental terms and landlord conditions. This
+                information will help the arbiter make decisions in case of
+                disputes.
+              </p>
+              <Textarea
+                id="terms"
+                placeholder="Example: First month's rent as deposit. Move-in date: Jan 15, 2025. Apartment must be as shown in photos. WiFi and utilities included. No smoking policy..."
+                value={formData.terms}
+                onChange={(e) => updateField("terms", e.target.value)}
+                required
+                rows={5}
+                className="mt-1.5 resize-none"
               />
             </div>
 
