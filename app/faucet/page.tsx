@@ -152,7 +152,7 @@ export default function FaucetPage() {
 
             <form onSubmit={handleClaimTokens} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-sm text-muted-foreground font-medium mb-2">
                   Your wallet address
                 </label>
                 <Input
