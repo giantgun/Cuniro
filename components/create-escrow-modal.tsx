@@ -264,7 +264,7 @@ export function CreateEscrowModal({
                 <span className="text-destructive ml-1">*</span>
               </Label>
               <p className="text-xs text-muted-foreground mt-1 mb-2 leading-relaxed">
-                Describe the rental terms and landlord conditions. This
+                Describe your personal terms and conditions. This
                 information will help the arbiter make decisions in case of
                 disputes.
               </p>
