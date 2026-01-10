@@ -605,7 +605,7 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
                     Processing
                   </>
                 ) : (
-                  "Release to Buyer"
+                  "Return to Tenant"
                 )}
               </Button>
               <Button
@@ -619,7 +619,7 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
                     Processing
                   </>
                 ) : (
-                  "Release to Seller"
+                  "Pay Landlord"
                 )}
               </Button>
             </div>
