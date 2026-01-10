@@ -481,19 +481,19 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
               <h4 className="text-sm font-medium mb-1">Contact Landlord</h4>
               <p className="text-sm text-muted-foreground flex items-center">
                 <Phone className="h-3 w-3 text-primary mr-1" />
-                <span>{escrow.listings.contact}</span>
+                <span>{escrow.listings.contact || "Listing Deleted"}</span>
               </p>
             </div>
             <div>
               <h4 className="text-sm font-medium mb-1">Landlord's terms</h4>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                {escrow.listings.terms}
+                {escrow.listings.terms || "Listing Deleted"}
               </p>
             </div>
             <div>
               <h4 className="text-sm font-medium mb-1">Tenant's terms</h4>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                {escrow.listings.terms}
+                {escrow.terms}
               </p>
             </div>
             <div className="grid grid-cols-2 gap-4 text-sm">

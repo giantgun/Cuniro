@@ -441,7 +441,7 @@ export function useContract() {
         toast({
           variant: "success",
           title: "Dispute Resolved",
-          description: `Funds distributed: ${sendToSeller ? "100% to Seller" : "100% to Buyer"}`,
+          description: `Funds distributed: ${sendToSeller ? "100% to Landlord" : "100% to Tenant"}`,
         });
 
         return true;
