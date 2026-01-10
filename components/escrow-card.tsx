@@ -271,7 +271,7 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
           {/* Dispute Notice */}
           {escrow.status === "disputed" && escrow.dispute_reason && (
             <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3">
-              <div className="flex items-start gap-2">
+              <div className="flex items-start gap-2 max-h-32 overflow-y-auto">
                 <AlertCircle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-destructive mb-1">
