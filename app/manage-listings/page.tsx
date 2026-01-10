@@ -129,7 +129,8 @@ export default function ManageListingsPage() {
         const { data, error } = await supabase
           .from("listings")
           .select(`*, profiles (address)`)
-          .eq("owner_id", user!.id);
+          .eq("owner_id", user!.id)
+          .setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
         if (error) {
           throw error;
         }

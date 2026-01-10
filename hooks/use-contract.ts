@@ -569,7 +569,8 @@ export function useContract() {
         .select(`*, listings (contact, terms)`)
         .or(
           `buyer_address.eq.${account},seller_address.eq.${account},arbiter_address.eq.${account}`,
-        );
+        )
+        .setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 
       if (error) {
         throw error;

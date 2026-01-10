@@ -2,7 +2,7 @@
 
 **Cuniro** is a student-focused rental marketplace built with Next.js and TypeScript. It provides tools to list properties, create/manage escrows, and browse rentals with a modern, accessible UI.
 
-> ⚠️ Important: This app was built and tested using a *mock mnee address* for demonstration purposes. Do not use the mock address for production or real funds.
+> ⚠️ Important: This app was built and tested using a _mock mnee address_ for demonstration purposes. Do not use the mock address for production or real funds.
 
 ---
 
@@ -36,6 +36,7 @@ Accessibility is a priority in this project. The UI uses semantic HTML, labeled 
 ## Getting Started (Local Development) 💻
 
 Prerequisites:
+
 - Node.js (>= 18)
 - pnpm (recommended)
 

@@ -6,7 +6,8 @@ async function getListings() {
   const { data, error } = await supabase
     .from("listings")
     .select(`*, profiles (address)`)
-    .eq("status", "available");
+    .eq("status", "available")
+    .setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 
   if (error) {
     console.error("Error fetching listings:", error);

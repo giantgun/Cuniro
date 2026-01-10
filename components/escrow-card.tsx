@@ -347,10 +347,12 @@ export function EscrowCard({ escrow, onStateChange }: EscrowCardProps) {
               <div>
                 <div className="flex items-center justify-between">
                   <div>
-                <div className="text-xs font-medium">{escrow.arbiter_name}</div>
-                  <code className="text-xs text-muted-foreground">
-                    {truncateAddress(escrow.arbiter_address)}
-                  </code>
+                    <div className="text-xs font-medium">
+                      {escrow.arbiter_name}
+                    </div>
+                    <code className="text-xs text-muted-foreground">
+                      {truncateAddress(escrow.arbiter_address)}
+                    </code>
                   </div>
                   <Button
                     variant="ghost"
