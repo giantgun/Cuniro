@@ -348,7 +348,7 @@ export default function ManageListingsPage() {
                                   ${listing.price}
                                 </td>
                                 <td className="p-4 text-right">
-                                  <div className="flex items-center justify-end gap-2 text-primary">
+                                  <div className="flex items-center justify-center gap-2 text-primary">
                                     <Button
                                       variant="ghost"
                                       size="icon"
