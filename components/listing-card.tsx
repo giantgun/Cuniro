@@ -149,7 +149,7 @@ export function ListingCard({ listing, dateNow }: ListingCardProps) {
               onClick={() => setShowViewModal(true)}
             >
               <Eye className="h-4 w-4 mr-1" />
-              {listing.profiles.address == account?"View/Edit":"Details"}
+              {listing.profiles.address == account ? "View/Edit" : "Details"}
             </Button>
 
             {listing.profiles.address == account ? (

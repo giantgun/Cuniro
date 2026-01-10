@@ -100,8 +100,6 @@ export function CreateListingModal({
       .from("listings")
       .insert(payload);
     if (listingError) throw listingError;
-
-    console.log("Uploaded file data:", uploadData);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -271,9 +269,8 @@ export function CreateListingModal({
                 <span className="text-destructive ml-1">*</span>
               </Label>
               <p className="text-xs text-muted-foreground mt-1 mb-2 leading-relaxed">
-                Describe the rental terms and conditions. This
-                information will help the arbiter make decisions in case of
-                disputes.
+                Describe the rental terms and conditions. This information will
+                help the arbiter make decisions in case of disputes.
               </p>
               <Textarea
                 id="terms"

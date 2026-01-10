@@ -50,7 +50,6 @@ export default function ManageListingsPage() {
 
   const handleDeleteClick = (listing: any) => {
     setListingToDelete(listing);
-    console.log("lis ", listing);
     if (!(listing.status == "available")) {
       toast({
         title: "Delete not allowed",
@@ -64,7 +63,6 @@ export default function ManageListingsPage() {
   };
 
   const handleViewClick = (listing: any) => {
-    console.log(listing);
     setListingToView(listing);
     setViewModalOpen(true);
   };
@@ -73,7 +71,6 @@ export default function ManageListingsPage() {
     if (listingToDelete) {
       try {
         const parts = listingToDelete.image_url?.split("/");
-        console.log(parts[parts.length - 1], " | ", parts[parts.length - 4]);
         const userId = parts[parts.length - 4];
         const imageId = parts[parts.length - 1];
 

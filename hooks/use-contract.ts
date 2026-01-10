@@ -104,7 +104,6 @@ export function useContract() {
           });
           return null;
         }
-        console.log("User MNEE Balance:", `${balance}`, "amount: ", amount);
 
         // 2. Check existing Allowance
         const currentAllowance = await mneeContract.allowance(
@@ -124,12 +123,6 @@ export function useContract() {
           });
         }
 
-        console.log("Creating escrow with:", {
-          seller,
-          arbiter,
-          amount,
-          timeout,
-        });
         const tx = await escrowManagerContract.createEscrow(
           seller,
           arbiter,
@@ -152,7 +145,6 @@ export function useContract() {
               }
             })
             .find((event: any) => event?.name === "EscrowCreated");
-          console.log("Parsed Log: ", parsedLog);
 
           if (parsedLog) {
             // 4. Extract data returned from the contract
@@ -164,8 +156,6 @@ export function useContract() {
               timeout,
             } = parsedLog.args;
             escrowId = id;
-            console.log(`Escrow Created - ID: ${id}, Seller: ${sellerAddr}`);
-            console.log(`Slice: ${id}, Buyer: ${`${buyerAddr}`.slice(2)}`);
 
             //5. Update Supabase
             const { error } = await supabase.from("escrows").insert([
@@ -251,7 +241,6 @@ export function useContract() {
               }
             })
             .find((event: any) => event?.name === "Released");
-          console.log("Parsed Log: ", parsedLog);
 
           if (parsedLog) {
             //5. Update Supabase
@@ -330,7 +319,6 @@ export function useContract() {
               }
             })
             .find((event: any) => event?.name === "Disputed");
-          console.log("Parsed Log: ", parsedLog);
 
           if (parsedLog) {
             //5. Update Supabase
@@ -431,7 +419,6 @@ export function useContract() {
               }
             })
             .find((event: any) => event?.name === "Arbitrated");
-          console.log("Parsed Log: ", parsedLog);
 
           if (parsedLog) {
             //5. Update Supabase
@@ -510,7 +497,6 @@ export function useContract() {
               }
             })
             .find((event: any) => event?.name === "AutoReleased");
-          console.log("Parsed Log: ", parsedLog);
 
           if (parsedLog) {
             //5. Update Supabase

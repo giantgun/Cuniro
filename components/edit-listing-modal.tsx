@@ -156,10 +156,6 @@ export function EditListingModal({
         });
 
       if (error) throw error;
-
-      console.log("img data ", imgData);
-
-      console.log("Image uploaded to Supabase storage at URL:", imageUrl);
     }
 
     const payload = {
@@ -332,9 +328,8 @@ export function EditListingModal({
                 <span className="text-destructive ml-1">*</span>
               </Label>
               <p className="text-xs text-muted-foreground mt-1 mb-2 leading-relaxed">
-                Describe the rental terms and conditions. This
-                information will help the arbiter make decisions in case of
-                disputes.
+                Describe the rental terms and conditions. This information will
+                help the arbiter make decisions in case of disputes.
               </p>
               <Textarea
                 id="terms"

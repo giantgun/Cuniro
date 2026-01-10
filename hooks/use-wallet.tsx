@@ -141,7 +141,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       if (data.user) {
         const userId = `${data.user.id}`;
         setUserId(userId);
-        console.log(`userId: ${userId}`);
+
         const { data: addressData, error: addressError } = await supabase
           .from("profiles")
           .select("address")

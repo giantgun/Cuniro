@@ -2,7 +2,7 @@ import { Navbar } from "@/components/navbar";
 import { ListingCard } from "@/components/listing-card";
 import { supabase } from "@/hooks/supabase";
 
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
 async function getListings() {
   const { data, error } = await supabase
@@ -15,8 +15,6 @@ async function getListings() {
     console.error("Error fetching listings:", error);
     return [];
   }
-
-  console.log(data)
 
   return data ?? [];
 }

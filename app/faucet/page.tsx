@@ -64,8 +64,7 @@ export default function FaucetPage() {
 
       setAddress("");
     } catch (error: any) {
-      console.error();
-      console.log(error.message);
+      console.error(error.message);
       toast({
         variant: "destructive",
         title: "Claim Failed",

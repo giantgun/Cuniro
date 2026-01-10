@@ -13,11 +13,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { CheckCircle } from "lucide-react";
 import { useState } from "react";
+import { Spinner } from "./ui/spinner";
 
 interface ConfirmClaimFundsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: () => Promise<void>;
   listingTitle: string;
   amount: string;
   isLoading?: boolean;
@@ -36,9 +37,9 @@ export function ConfirmClaimFundsModal({
 
   const isComplete = keysGiven && buyerMovedIn;
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (isComplete) {
-      onConfirm();
+      await onConfirm();
       setKeysGiven(false);
       setBuyerMovedIn(false);
     }
@@ -108,7 +109,14 @@ export function ConfirmClaimFundsModal({
             disabled={!isComplete || isLoading}
             className="flex-1"
           >
-            {isLoading ? "Processing" : "Claim Funds"}
+            {isLoading ? (
+              <>
+                <Spinner size="sm" className="text-primary-foreground" />
+                Processing
+              </>
+            ) : (
+              "Claim Funds"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
