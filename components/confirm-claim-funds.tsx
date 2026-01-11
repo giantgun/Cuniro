@@ -74,7 +74,7 @@ export function ConfirmClaimFundsModal({
               className="border-2 border-primary/70"
             />
             <Label htmlFor="keys-given" className="cursor-pointer font-medium">
-              I have given the apartment keys to the buyer
+              I have given the apartment keys to the Tenant
             </Label>
           </div>
 
