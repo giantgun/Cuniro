@@ -27,16 +27,19 @@ Follow these steps to deploy quickly:
    - A Supabase project
 
 
+3. Create a Supabase Storage bucket named `listing-images` for image file uploads (used by the app)
+
 2. Apply database SQL (Supabase)
 Run the SQL files in `supabase/sql/` in order: `tables.sql`, `policies.sql`, `functions.sql`, `triggers.sql` in SQL Editor in the Supabase dashboard (or use `init_db.sql`)([see Supabase Setup](#supabase-setup)).
-
-3. Create a Supabase Storage bucket named `listing-images` for image file uploads (used by the app)
 
 2. Minimum environment variables
 - `NEXT_PUBLIC_PUBLISHABLE_DEFAULT_KEY`: Get it from your supabase dashboard
 - `NEXT_PUBLIC_SUPABASE_URL`: Get it from your supabase dashboard
 - `NEXT_PUBLIC_ESCROW_MANAGER_ADDRESS`: EscrowManager Contract address
 - `NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET`: name of your Supabase storage bucket (e.g. `listing-images`) — the app expects this bucket name for uploads and public URLs.
+- `NEXT_PUBLIC_MNEE_ADDRESS`(Optional) for Faucet in testnet
+- `NEXT_PUBLIC_NETWORK`(Optional) set to sepolia in dev mode
+- `NEXT_PUBLIC_IS_DEV`(Optional) set to true in dev mode
 
 3. Install & build
 ```bash
@@ -88,14 +91,13 @@ This demo enforces escrow logic on-chain using the EscrowManager smart contract 
 - ✅ You Own Your Funds: Tokens remain in user wallets / approved contracts
 - ✅ On-Chain Guarantees: Escrow rules are executed by smart contracts
 - ✅ Transparent Audit Trail: All actions are visible on-chain
-- ✅ Easy Recovery: Admins can pause or arbitrate when necessary
 
 ## Tech Stack
 
 - Frontend: Next.js 16, React 19, TypeScript, Tailwind CSS
 - UI: Radix UI primitives
 - Blockchain: Ethers.js (interacts with MNEE & EscrowManager contracts)
-- Data: Supabase (demo database)
+- Data: Supabase (Postgres database)
 - Tooling: pnpm, Prettier, ESLint
 
 ## Project Structure
@@ -108,45 +110,7 @@ This demo enforces escrow logic on-chain using the EscrowManager smart contract 
 ├── public/                # Static assets
 ├── styles/                # Global styles
 ```
-## Getting Started
-
-Follow these minimal steps to run locally or prepare for deploy:
-
-1. Prerequisites: Node.js 18+, pnpm (Supabase project required for full features)
-2. Install & build:
-```bash
-pnpm install
-```
-3. Minimum env vars (create `.env.local`):
-- `NEXT_PUBLIC_MNEE_ADDRESS`
-- `NEXT_PUBLIC_ESCROW_MANAGER_ADDRESS`: address of a deployed EscrowManager
-- `SUPABASE_URL` & `SUPABASE_ANON_KEY` (if using the database)
-
-4. Apply DB schema (if using Supabase): run SQL in `supabase/sql/` or use `supabase/sql/init_db.sql` (see **Supabase Setup** below)
-
-5. Run locally:
-```bash
-pnpm dev
-# visit http://localhost:3000
-```
-
-6. Build & run in production:
-```bash
-pnpm build
-pnpm start
-```
-
-Helpful scripts:
-- `pnpm dev`, `pnpm build`, `pnpm start`, `pnpm lint`, `pnpm format`
-
-Notes:
-- Faucet is dev-only (remove or disable for mainnet).
-- The **Create Escrow** modal includes a dev/test-only **"add arbiter"** feature and ships with a set of mock arbiters (`defaultArbiters` in `components/create-escrow-modal.tsx`). To disable for production, remove the `showAddArbiterModal` state and its associations, and replace arbiters with trusted arbiters or with a valid arbiter reputation system.
-- Ensure `NEXT_PUBLIC_ESCROW_MANAGER_ADDRESS` points to a deployed EscrowManager contract (see **Deployment**).
-
----
-
-## Supabase Setup
+## Supabase Setup (Details)
 
 Follow these steps to create and configure a Supabase project for this app.
 
@@ -229,28 +193,6 @@ If you want a single convenience script that runs everything in order locally, s
 6. Use the **service_role** key on trusted server backends only: never embed it in client code.
 
 > 💡 Tip: The SQL files live under `supabase/sql/` so they can be executed manually or integrated into your migration workflow.
-
----
-
-## Deployment
-
-This project assumes you have completed the **Supabase Setup** above and that EscrowManager is deployed on testnet and mainnet.Supabase is a required dependency for the demo to function (database, RLS policies, and triggers). Follow these deployment recommendations:
-
-- Ensure your Supabase project is created and the SQL files have been applied (`supabase/sql/tables.sql`, `policies.sql`, `functions.sql`, `triggers.sql` or the single `init_db.sql`).
-- Configure environment variables on your hosting provider (e.g., Vercel, Netlify, Render):
-  - `NEXT_PUBLIC_MNEE_ADDRESS`: MNEE ERC-20 token address
-  - `NEXT_PUBLIC_ESCROW_MANAGER_ADDRESS`: Deployed EscrowManager contract address
-  - `SUPABASE_URL`, `SUPABASE_ANON_KEY`: Supabase project values
-  - (Optional server-only) `SUPABASE_SERVICE_ROLE_KEY`: service role key for server-side jobs (never expose to client)
-- Deploy the Next.js app (example: Vercel)
-  1. Add repository to Vercel and set the environment variables.
-  2. Set build command: `pnpm build` and output directory as default for Next.js.
-  3. Deploy and monitor logs for build/runtime errors.
-- Database migrations & automation: For production, consider running the SQL via Supabase Migrations or a CI job so schema changes are repeatable. The `supabase/sql/init_db.sql` provides a convenience one-shot script, but for repeatable deployments use migrations.
-
-Verification after deployment:
-- Create a test user and confirm a `profiles` row is created (the `handle_new_user` trigger should do this).
-- Perform a sample escrow flow (mint dev MNEE if needed) and confirm end-to-end behavior.
 
 ---
 
