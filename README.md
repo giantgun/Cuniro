@@ -22,7 +22,7 @@ Follow these steps to deploy quickly:
    - Node.js 18+
    - pnpm
    - Deployed EscrowManager with MNEE ERC20 ([goto EscrowManager->](https://github.com/giantgun/EscrowManager) ) 
-   - A Supabase project
+   - A Supabase project see (https://supabase.com) 
 
 
 3. Create a Supabase Storage bucket named `listing-images` for image file uploads (used by the app)
