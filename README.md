@@ -2,22 +2,61 @@
 
 Student-focused rental marketplace & escrow platform using MNEE stablecoin (demo).
 
-Cuniro implements the EscrowManager smart contract (https://github.com/giantgun/EscrowManager) and uses the MNEE USD‑backed ERC‑20 stablecoin for listings and automated escrow flows. Using a stablecoin like MNEE provides price stability and enables programmable payments and financial automation, making commerce more predictable and simple.
+Cuniro implements the EscrowManager smart contract [goto EscrowManager->](https://github.com/giantgun/EscrowManager) and uses the MNEE USD‑backed ERC‑20 stablecoin for listings and automated escrow flows. Using a stablecoin like MNEE provides price stability and enables programmable payments and financial automation, making commerce more predictable and simple.
 
-Cuniro is a demo marketplace for student rentals that uses MNEE for listing prices and on-chain escrow flows. It includes UI for listings, secure escrow creation, a local faucet for minting mock MNEE, and sample integration points for the EscrowManager contract.
+Cuniro is a platform for student housing rentals that uses MNEE for payments and on-chain escrow. It includes a UI for listings, secure escrow creation, a local faucet for minting mock MNEE, and sample integration points for the EscrowManager contract.
 
-Features
+## Deploy (fast) ✅
 
-- 🔐 Non-Custodial Escrows — Funds are held in on-chain escrows until release or dispute
-- 🧾 Simple Escrow Flows — Create escrows, release funds, raise disputes, and arbitrate
-- 💸 Mock MNEE Faucet — Mint demo MNEE tokens locally via the `/faucet` page
-- ♿ Accessibility-first UI — Semantic HTML, labels and ARIA where appropriate
-- ⚡ Fast Local Dev — Next.js + Tailwind + Supabase for quick iteration
+Follow these steps to deploy quickly:
 
-Non-Custodial Architecture
+1. Prerequisites
+   - Node.js 18+
+   - pnpm
+   - A Supabase project (See supabase setup for details)
 
-This demo enforces escrow logic on-chain using the EscrowManager smart contract (https://github.com/giantgun/EscrowManager). Payments are done using MNEE, a USD‑backed ERC‑20 stablecoin—this gives price stability and enables programmable, automated payments and escrow workflows that simplify commerce and financial automation. The app never holds user funds directly — users approve the escrow contract to transfer MNEE from their wallets.
+2. Install & build
+```bash
+pnpm install
+pnpm build
+```
 
+3. Minimum environment variables
+- `NEXT_PUBLIC_MNEE_ADDRESS`
+- `NEXT_PUBLIC_ESCROW_MANAGER_ADDRESS`
+- `SUPABASE_URL` & `SUPABASE_ANON_KEY`
+
+4. Apply database SQL (Supabase)
+Run the SQL files in `supabase/sql/` in order: `tables.sql`, `policies.sql`, `functions.sql`, `triggers.sql` (or use `init_db.sql`).
+
+5. Deploy
+- Example (Vercel): add the repository to Vercel, set the environment variables, set the build command to `pnpm build`, then deploy.
+
+See the full **Supabase Setup** and **Deployment** sections below for details and troubleshooting.
+
+## Table of Contents
+
+- [Quick Deploy](#quick-start--deploy-fast-)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [Supabase Setup](#supabase-setup)
+- [Deployment](#deployment)
+- [Database Schema](#database-schema)
+
+## Features
+
+- 🔐 Non-Custodial Escrows: Funds are held in on-chain escrows until release or dispute
+- 🧾 Simple Escrow Flows: Create escrows, release funds, raise disputes, and arbitrate
+- 💸 Mock MNEE Faucet: Mint Mock MNEE tokens locally via the `/faucet` page
+- ♿ Accessibility-first UI: Semantic HTML, labels and ARIA where appropriate
+- ⚡ Fast Local Dev: Next.js + Tailwind + Supabase for quick iteration
+
+## Non-Custodial Architecture
+
+This demo enforces escrow logic on-chain using the EscrowManager smart contract [goto EscrowManager->](https://github.com/giantgun/EscrowManager). Payments are done using MNEE, a USD‑backed ERC‑20 stablecoin—this gives price stability and enables programmable, automated payments and escrow workflows that simplify commerce and financial automation. The app never holds user funds directly, users approve the escrow contract to transfer MNEE from their wallets.
+
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                      Your Wallet (USER)                     │
 │  - Approve EscrowManager to spend MNEE on your behalf         │
@@ -33,19 +72,20 @@ This demo enforces escrow logic on-chain using the EscrowManager smart contract 
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                          MNEE ERC20                          │
+│                         MNEE ERC-20                         │
 │  - USD-backed stablecoin used for payments and automated     │
 │    escrow flows (enables predictable pricing & automation)   │
 └─────────────────────────────────────────────────────────────┘
+```
 
-Why Non-Custodial Matters
+## Why Non-Custodial Matters
 
-- ✅ You Own Your Funds — Tokens remain in user wallets / approved contracts
-- ✅ On-Chain Guarantees — Escrow rules are executed by smart contracts
-- ✅ Transparent Audit Trail — All actions are visible on-chain
-- ✅ Easy Recovery — Admins can pause or arbitrate when necessary
+- ✅ You Own Your Funds: Tokens remain in user wallets / approved contracts
+- ✅ On-Chain Guarantees: Escrow rules are executed by smart contracts
+- ✅ Transparent Audit Trail: All actions are visible on-chain
+- ✅ Easy Recovery: Admins can pause or arbitrate when necessary
 
-Tech Stack
+## Tech Stack
 
 - Frontend: Next.js 16, React 19, TypeScript, Tailwind CSS
 - UI: Radix UI primitives
@@ -53,8 +93,8 @@ Tech Stack
 - Data: Supabase (demo database)
 - Tooling: pnpm, Prettier, ESLint
 
-Project Structure
-
+## Project Structure
+```text
 ├── app/                   # Next.js app router pages
 ├── components/            # React components & modals
 ├── components/ui/         # Design system components (Radix + Tailwind)
@@ -62,49 +102,42 @@ Project Structure
 ├── lib/                   # Utilities
 ├── public/                # Static assets
 ├── styles/                # Global styles
+```
+## Getting Started
 
-Getting Started
+Follow these minimal steps to run locally or prepare for deploy:
 
-Prerequisites
-
-- Node.js 18+
-- pnpm
-
-Install dependencies
-
+1. Prerequisites: Node.js 18+, pnpm (Supabase project required for full features)
+2. Install & build:
 ```bash
 pnpm install
 ```
+3. Minimum env vars (create `.env.local`):
+- `NEXT_PUBLIC_MNEE_ADDRESS`
+- `NEXT_PUBLIC_ESCROW_MANAGER_ADDRESS`: address of a deployed EscrowManager
+- `SUPABASE_URL` & `SUPABASE_ANON_KEY` (if using the database)
 
-Run the dev server
+4. Apply DB schema (if using Supabase): run SQL in `supabase/sql/` or use `supabase/sql/init_db.sql` (see **Supabase Setup** below)
 
+5. Run locally:
 ```bash
 pnpm dev
+# visit http://localhost:3000
 ```
 
-Build for production
-
+6. Build & run in production:
 ```bash
 pnpm build
+pnpm start
 ```
 
-Useful Scripts
+Helpful scripts:
+- `pnpm dev`, `pnpm build`, `pnpm start`, `pnpm lint`, `pnpm format`
 
-- `pnpm dev` — Run Next.js in development
-- `pnpm build` — Build for production
-- `pnpm start` — Start a built Next.js server
-- `pnpm lint` — Run ESLint
-- `pnpm format` — Format with Prettier
-
-Environment Variables
-
-Create a `.env.local` (or use `.env`) in the repo root with at least:
-
-- `NEXT_PUBLIC_MNEE_ADDRESS` — The MNEE ERC20 token address (demo or mainnet)
-- `NEXT_PUBLIC_ESCROW_MANAGER_ADDRESS` — Deployed EscrowManager contract address
-- `SUPABASE_URL` & `SUPABASE_ANON_KEY` — Supabase demo project keys (optional)
-
-Note: This repo ships with a demo MNEE address in `.env`. For mainnet testing replace `NEXT_PUBLIC_MNEE_ADDRESS` with a real MNEE contract address.
+Notes:
+- Faucet is dev-only (remove or disable for mainnet).
+- The **Create Escrow** modal includes a dev/test-only **"add arbiter"** feature and ships with a set of mock arbiters (`defaultArbiters` in `components/create-escrow-modal.tsx`). To disable for production, remove the `showAddArbiterModal` state and its associations, and replace arbiters with trusted arbiters or with a valid arbiter reputation system.
+- Ensure `NEXT_PUBLIC_ESCROW_MANAGER_ADDRESS` points to a deployed EscrowManager contract (see **Deployment**).
 
 ---
 
@@ -115,7 +148,7 @@ Follow these steps to create and configure a Supabase project for this app.
 1. Create a Supabase account at https://supabase.com and create a new **Project** (select a region and set a strong DB password).
 2. From **Project → Settings → API**, copy your **SUPABASE_URL**, **anon** key and **service_role** key. Keep the `service_role` secret (server-only).
 
-### Run SQL (Dashboard / UI) — recommended for most users
+### Run SQL (Dashboard / UI), recommended for most users
 
 This project includes SQL scripts in `supabase/sql/`. The easiest way to apply them is via the Supabase **Dashboard → SQL Editor**:
 
@@ -127,10 +160,6 @@ This project includes SQL scripts in `supabase/sql/`. The easiest way to apply t
    2. `supabase/sql/functions.sql`
    3. `supabase/sql/triggers.sql`
 5. Confirm Row Level Security (RLS) is enabled for the tables (the `tables.sql` includes `ALTER TABLE ... ENABLE ROW LEVEL SECURITY;`), and check policies in **Auth / Policies** or run a quick `SELECT` to validate behavior.
-
-Notes & edge cases (UI):
-- If you need to create triggers or objects in the `auth` schema (for example, a trigger on `auth.users` to populate `profiles`), the Dashboard SQL editor may restrict some operations for non-privileged roles. If you encounter permission errors when creating `auth`-schema triggers, use the CLI/psql option below with your `service_role` key (server-side) to run the SQL.
-- The SQL Editor doesn't have a built-in "run a .sql file" button in all accounts; copy-paste is the most reliable UI method. Some accounts may offer an import/upload option — use it if available.
 
 ---
 
@@ -148,9 +177,9 @@ psql "postgresql://postgres:<DB_PASSWORD>@db.<region>.supabase.co:5432/postgres"
 
 If you want a single convenience script that runs everything in order locally, see `supabase/sql/init_db.sql`.
 
-4. Enable Row Level Security (RLS) if not already enabled — the `tables.sql` sets RLS on by default, and `policies.sql` creates the required policies.
+4. Enable Row Level Security (RLS) if not already enabled: the `tables.sql` sets RLS on by default, and `policies.sql` creates the required policies.
 5. (Optional) Enable Auth providers (GitHub, Google, Email) under **Authentication → Providers**.
-6. Use the **service_role** key on trusted server backends only — never embed it in client code.
+6. Use the **service_role** key on trusted server backends only: never embed it in client code.
 
 > 💡 Tip: The SQL files live under `supabase/sql/` so they can be executed manually or integrated into your migration workflow.
 
@@ -158,14 +187,14 @@ If you want a single convenience script that runs everything in order locally, s
 
 ## Deployment
 
-This project assumes you have completed the **Supabase Setup** above — Supabase is a required dependency for the demo to function (database, RLS policies, and triggers). Follow these deployment recommendations:
+This project assumes you have completed the **Supabase Setup** above and that EscrowManager is deployed on testnet and mainnet.Supabase is a required dependency for the demo to function (database, RLS policies, and triggers). Follow these deployment recommendations:
 
 - Ensure your Supabase project is created and the SQL files have been applied (`supabase/sql/tables.sql`, `policies.sql`, `functions.sql`, `triggers.sql` or the single `init_db.sql`).
 - Configure environment variables on your hosting provider (e.g., Vercel, Netlify, Render):
-  - `NEXT_PUBLIC_MNEE_ADDRESS` — MNEE ERC-20 token address
-  - `NEXT_PUBLIC_ESCROW_MANAGER_ADDRESS` — Deployed EscrowManager contract address
-  - `SUPABASE_URL`, `SUPABASE_ANON_KEY` — Supabase project values
-  - (Optional server-only) `SUPABASE_SERVICE_ROLE_KEY` — service role key for server-side jobs (never expose to client)
+  - `NEXT_PUBLIC_MNEE_ADDRESS`: MNEE ERC-20 token address
+  - `NEXT_PUBLIC_ESCROW_MANAGER_ADDRESS`: Deployed EscrowManager contract address
+  - `SUPABASE_URL`, `SUPABASE_ANON_KEY`: Supabase project values
+  - (Optional server-only) `SUPABASE_SERVICE_ROLE_KEY`: service role key for server-side jobs (never expose to client)
 - Deploy the Next.js app (example: Vercel)
   1. Add repository to Vercel and set the environment variables.
   2. Set build command: `pnpm build` and output directory as default for Next.js.
@@ -182,14 +211,14 @@ Verification after deployment:
 
 **Overview:** The app uses three primary tables:
 
-- `profiles` — stores user profile data (mapped by `id` = `auth.uid()` and `address`).
-- `listings` — rental listings created by users; `owner_id` references `profiles.id`.
-- `escrows` — escrow records for a listing; references `listing_id` and stores `buyer_address`, `seller_address`, `arbiter_address` (addresses correspond to `profiles.address`).
+- `profiles`: stores user profile data (mapped by `id` = `auth.uid()` and `address`).
+- `listings`: rental listings created by users; `owner_id` references `profiles.id`.
+- `escrows`: escrow records for a listing; references `listing_id` and stores `buyer_address`, `seller_address`, `arbiter_address` (addresses correspond to `profiles.address`).
 
 **Relationships & notes:**
 - `profiles.id` is a UUID (`auth.uid()`), used for authorization policies.
 - `escrows.listing_id` links to `listings.id` (ensure this column name is correct for your dataset).
-- RLS policies are applied to each table — see `supabase/sql/policies.sql` for details.
+- RLS policies are applied to each table, see `supabase/sql/policies.sql` for details.
 
 ### Entity diagram (Mermaid)
 
@@ -250,7 +279,7 @@ supabase stop
 
 ---
 
-Quick Usage Examples
+### Quick Usage Examples
 
 - Faucet (dev only): visit `/faucet` to mint demo MNEE tokens to your connected wallet.
 
@@ -262,29 +291,22 @@ import { useContract } from "@/hooks/use-contract";
 function Example() {
   const { createEscrow, mintMnee } = useContract();
 
-  // Mint 100k mock MNEE (dev only)
-  // await mintMnee(yourAddress);
-
-  // Create an escrow (example)
-  // await createEscrow(seller, arbiter, "50", 86400, "terms", "Listing Title", 1, "Arbiter Name");
+   Create an escrow (example)
+   await createEscrow(seller, arbiter, "50", 86400, "terms", "Listing Title", 1, "Arbiter Name");
 }
 ```
 
-MNEE Integration
+## MNEE Integration
 
 - The frontend reads `NEXT_PUBLIC_MNEE_ADDRESS` to locate the MNEE token. Using a stablecoin like MNEE helps keep pricing predictable and enables automated payment/escrow workflows that simplify commerce and financial automation.
-- For local development the project includes a faucet to mint mock MNEE.
-- For production, configure the app to use a proper stablecoin contract address (or the canonical MNEE address) and verify on-chain behavior before using real funds.
+- For local development the project includes a faucet to mint mock MNEE (disable on mainnet).
+- For production, configure the app to use the MNEE address (`0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF`) and verify on-chain behavior before using real funds.
+- 
 
-Security & Notes
+## Security & Notes
 
-- This project is a demo and **uses mock tokens and addresses by default** — do not use demo keys or addresses with real funds.
-- Always review contract addresses before sending real tokens.
+- This project **uses mock tokens and addresses by default**.
 
-Contributing
+## License
 
-Contributions welcome — open an issue or submit a PR. Keep changes focused and add tests where applicable.
-
-License
-
-This project is licensed under the MIT License — see the `LICENSE` file for details.
+This project is licensed under the MIT License, see the `LICENSE` file for details.
