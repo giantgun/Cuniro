@@ -1,0 +1,14 @@
+name: Keep Supabase Alive
+on:
+  schedule:
+    - cron: '0 0 * * 0,4' # Runs every Sunday and Thursday at midnight UTC
+  workflow_dispatch:      # Allows you to run it manually for testing
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Database
+        run: |
+          curl -X GET "${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}/rest/v1/listings?select=id&limit=1" \
+          -H "apikey: ${{ secrets.NEXT_PUBLIC_PUBLISHABLE_DEFAULT_KEY }}" \
+          -H "Authorization: Bearer ${{ secrets.NEXT_PUBLIC_PUBLISHABLE_DEFAULT_KEY }}"
