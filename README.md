@@ -11,9 +11,7 @@ Cuniro is a platform for student housing rentals that uses MNEE for payments and
 - [Quick Deploy](#quick-deploy)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
-- [Getting Started](#getting-started)
 - [Supabase Setup](#supabase-setup)
-- [Deployment](#deployment)
 - [Database Schema](#database-schema)
 
 ## Quick Deploy ✅
