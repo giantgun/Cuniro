@@ -209,39 +209,88 @@ Verification after deployment:
 
 ## Database Schema
 
-**Overview:** The app uses three primary tables:
+**Overview:** The app uses three primary tables: `profiles`, `listings`, and `escrows`. The SQL scripts that define these tables live under `supabase/sql/`.
 
-- `profiles`: stores user profile data (mapped by `id` = `auth.uid()` and `address`).
-- `listings`: rental listings created by users; `owner_id` references `profiles.id`.
-- `escrows`: escrow records for a listing; references `listing_id` and stores `buyer_address`, `seller_address`, `arbiter_address` (addresses correspond to `profiles.address`).
+### `profiles` (public.profiles)
 
-**Relationships & notes:**
-- `profiles.id` is a UUID (`auth.uid()`), used for authorization policies.
-- `escrows.listing_id` links to `listings.id` (ensure this column name is correct for your dataset).
-- RLS policies are applied to each table, see `supabase/sql/policies.sql` for details.
+- `id` uuid NOT NULL
+- `address` text
+- `created_at` timestamp with time zone NOT NULL DEFAULT timezone('utc', now())
+
+Notes: `id` is expected to map to `auth.uid()` for authorization policies (see `supabase/sql/policies.sql`).
+
+---
+
+### `listings` (public.listings)
+
+- `id` bigint NOT NULL
+- `owner_id` uuid NOT NULL DEFAULT auth.uid()
+- `title` text NOT NULL
+- `description` text NOT NULL
+- `price` bigint NOT NULL
+- `bedrooms` bigint NOT NULL
+- `bathrooms` bigint NOT NULL
+- `location` text
+- `contact` text
+- `image_url` text NOT NULL
+- `terms` text NOT NULL
+- `created_at` timestamp with time zone NOT NULL DEFAULT now()
+- `status` text DEFAULT 'active'
+
+Notes: `owner_id` references `profiles.id` conceptually and RLS policies assume this relationship.
+
+---
+
+### `escrows` (public.escrows)
+
+- `id` bigint NOT NULL
+- `listing_id` bigint NOT NULL
+- `listing_title` text NOT NULL
+- `terms` text NOT NULL
+- `dispute_reason` text
+- `buyer_address` text NOT NULL
+- `seller_address` text NOT NULL
+- `arbiter_address` text NOT NULL
+- `arbiter_name` text NOT NULL
+- `status` text NOT NULL
+- `amount` bigint NOT NULL
+- `timeout` bigint NOT NULL
+- `created_at` timestamp with time zone NOT NULL DEFAULT now()
+
+Notes & recommendations:
+- The provided SQL creates these columns and enables RLS but does not set explicit primary key constraints—consider adding PK/index constraints in migrations if you need stronger guarantees or referential integrity.
+- `escrows.listing_id` links to `listings.id` and address fields typically correspond to `profiles.address` values.
+
+---
+
+For the full table definitions, see: `supabase/sql/tables.sql` (this README summarizes the current schema).
 
 ### Entity diagram (Mermaid)
 
 ```mermaid
 erDiagram
   PROFILES {
-    uuid id PK
+    uuid id
     text address
   }
   LISTINGS {
-    bigint id PK
-    uuid owner_id FK
+    bigint id
+    uuid owner_id
     text title
     text description
     bigint price
     text status
   }
   ESCROWS {
-    bigint id PK
-    bigint listing_id FK
+    bigint id
+    bigint listing_id
+    text listing_title
+    text terms
+    text dispute_reason
     text buyer_address
     text seller_address
     text arbiter_address
+    text arbiter_name
     text status
     bigint amount
   }
