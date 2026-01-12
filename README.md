@@ -270,20 +270,28 @@ For the full table definitions, see: `supabase/sql/tables.sql` (this README summ
 ```mermaid
 erDiagram
   PROFILES {
-    uuid id
+    uuid id PK
     text address
+    timestamp created_at
   }
   LISTINGS {
-    bigint id
-    uuid owner_id
+    bigint id PK
+    uuid owner_id FK
     text title
     text description
     bigint price
+    bigint bedrooms
+    bigint bathrooms
+    text location
+    text contact
+    text image_url
+    text terms
+    timestamp created_at
     text status
   }
   ESCROWS {
-    bigint id
-    bigint listing_id
+    bigint id PK
+    bigint listing_id FK
     text listing_title
     text terms
     text dispute_reason
@@ -293,6 +301,8 @@ erDiagram
     text arbiter_name
     text status
     bigint amount
+    bigint timeout
+    timestamp created_at
   }
   PROFILES ||--o{ LISTINGS : "owns"
   LISTINGS ||--o{ ESCROWS : "has"
