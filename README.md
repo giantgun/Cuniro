@@ -6,43 +6,48 @@ Cuniro implements the EscrowManager smart contract [goto EscrowManager->](https:
 
 Cuniro is a platform for student housing rentals that uses MNEE for payments and on-chain escrow. It includes a UI for listings, secure escrow creation, a local faucet for minting mock MNEE, and sample integration points for the EscrowManager contract.
 
-## Deploy (fast) ✅
-
-Follow these steps to deploy quickly:
-
-1. Prerequisites
-   - Node.js 18+
-   - pnpm
-   - A Supabase project (See supabase setup for details)
-
-2. Install & build
-```bash
-pnpm install
-pnpm build
-```
-
-3. Minimum environment variables
-- `NEXT_PUBLIC_MNEE_ADDRESS`
-- `NEXT_PUBLIC_ESCROW_MANAGER_ADDRESS`
-- `SUPABASE_URL` & `SUPABASE_ANON_KEY`
-
-4. Apply database SQL (Supabase)
-Run the SQL files in `supabase/sql/` in order: `tables.sql`, `policies.sql`, `functions.sql`, `triggers.sql` (or use `init_db.sql`).
-
-5. Deploy
-- Example (Vercel): add the repository to Vercel, set the environment variables, set the build command to `pnpm build`, then deploy.
-
-See the full **Supabase Setup** and **Deployment** sections below for details and troubleshooting.
-
 ## Table of Contents
 
-- [Quick Deploy](#quick-start--deploy-fast-)
+- [Quick Deploy](#quick-deploy)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Getting Started](#getting-started)
 - [Supabase Setup](#supabase-setup)
 - [Deployment](#deployment)
 - [Database Schema](#database-schema)
+
+## Quick Deploy ✅
+
+Follow these steps to deploy quickly:
+
+1. Prerequisites
+   - Node.js 18+
+   - pnpm
+   - Deployed EscrowManager with MNEE ERC20 ([goto EscrowManager->](https://github.com/giantgun/EscrowManager) ) 
+   - A Supabase project
+
+
+2. Apply database SQL (Supabase)
+Run the SQL files in `supabase/sql/` in order: `tables.sql`, `policies.sql`, `functions.sql`, `triggers.sql` in SQL Editor in the Supabase dashboard (or use `init_db.sql`)([see Supabase Setup](#supabase-setup)).
+
+3. Create a Supabase Storage bucket named `listing-images` for image file uploads (used by the app)
+
+2. Minimum environment variables
+- `NEXT_PUBLIC_PUBLISHABLE_DEFAULT_KEY`: Get it from your supabase dashboard
+- `NEXT_PUBLIC_SUPABASE_URL`: Get it from your supabase dashboard
+- `NEXT_PUBLIC_ESCROW_MANAGER_ADDRESS`: EscrowManager Contract address
+- `NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET`: name of your Supabase storage bucket (e.g. `listing-images`) — the app expects this bucket name for uploads and public URLs.
+
+3. Install & build
+```bash
+pnpm install
+pnpm build
+```
+
+5. Deploy
+- Example (Vercel): add the repository to Vercel, set the environment variables, set the build command to `pnpm build`, then deploy.
+
+See the full **Supabase Setup** and **Deployment** sections below for details and troubleshooting.
 
 ## Features
 
@@ -156,11 +161,53 @@ This project includes SQL scripts in `supabase/sql/`. The easiest way to apply t
 2. Click **New query**.
 3. Paste the contents of `supabase/sql/tables.sql` into the editor and click **Run**. Verify the tables appear under **Table Editor → public**.
 4. Repeat for the remaining files in this exact order:
-   1. `supabase/sql/policies.sql`
+   1. `supabase/sql/policies.sql`  
+      - Note: `policies.sql` includes storage RLS policies for the `listing-images` bucket used by this app.
    2. `supabase/sql/functions.sql`
    3. `supabase/sql/triggers.sql`
 5. Confirm Row Level Security (RLS) is enabled for the tables (the `tables.sql` includes `ALTER TABLE ... ENABLE ROW LEVEL SECURITY;`), and check policies in **Auth / Policies** or run a quick `SELECT` to validate behavior.
+#### Storage bucket RLS (Supabase Storage) 🔐
 
+This project uses Supabase Storage for listing images. To restrict file access to owners and to provide optional public read access (for listing images), add Row Level Security policies on the `storage.objects` table in the `storage` schema. Run these in the SQL editor or via psql.
+
+Example policies (this project uses the `listing-images`):
+
+```sql
+-- Public read for the `listing-images` bucket (optional)
+create policy "Give everyone read access (listing-images)" on storage.objects
+  for select using (
+    bucket_id = 'listing-images'
+  );
+
+-- Owner-only management for `listing-images` (folder-based ownership)
+create policy "Owners can insert into listing-images" on storage.objects
+  for insert with check (
+    bucket_id = 'listing-images' and (auth.uid()::text) = (storage.foldername(name))[1]
+  );
+
+create policy "Owners can select from listing-images" on storage.objects
+  for select using (
+    bucket_id = 'listing-images' and (auth.uid()::text) = (storage.foldername(name))[1]
+  );
+
+create policy "Owners can update in listing-images" on storage.objects
+  for update using (
+    bucket_id = 'listing-images' and (auth.uid()::text) = (storage.foldername(name))[1]
+  );
+
+create policy "Owners can delete from listing-images" on storage.objects
+  for delete using (
+    bucket_id = 'listing-images' and (auth.uid()::text) = (storage.foldername(name))[1]
+  );
+```
+
+Notes:
+- The app assumes a folder structure of `"{userId}/listings/images/{filename}"` within the `listing-images` bucket (e.g., `"123e4567-89ab-cdef-0123-456789abcdef/listings/images/uuid.jpg"`).
+- Use the environment variable `NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET` set to `listing-images` so the client code uploads and serves URLs correctly.
+
+Notes:
+- These policies rely on `storage.foldername(name)[1]` (the first path segment) being the owner's `auth.uid()`; ensure uploads use a folder structure like `"{userId}/filename.jpg"`.
+- Test policies with sample users in the Supabase Dashboard → SQL Editor or via the Storage UI, and check **Auth → Policies** to confirm behavior.
 ---
 
 ### Run SQL (CLI / psql)

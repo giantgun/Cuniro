@@ -25,3 +25,16 @@ CREATE POLICY "access cont" ON public.escrows FOR UPDATE TO public USING ((EXIST
 CREATE POLICY "access cont select" ON public.escrows FOR SELECT TO public USING ((EXISTS ( SELECT 1
    FROM profiles
   WHERE ((profiles.id = auth.uid()) AND (((profiles.address = escrows.buyer_address) AND (escrows.status = 'pending'::text)) OR ((profiles.address = escrows.arbiter_address) AND (escrows.status = 'disputed'::text)) OR ((profiles.address = escrows.seller_address) AND (escrows.status = 'pending'::text) AND ((escrows.created_at + ((escrows.timeout)::double precision * '00:00:01'::interval)) <= now())))))));
+
+-- Storage (Supabase Storage) policies — this project uses the `listing-images` bucket only
+-- These policies restrict object access to folder-based ownership and optionally allow public reads for listing images
+
+CREATE POLICY "Give everyone read access (listing-images)" ON storage.objects FOR SELECT TO public USING (bucket_id = 'listing-images');
+
+CREATE POLICY "Owners can insert into listing-images" ON storage.objects FOR INSERT TO public WITH CHECK (bucket_id = 'listing-images' AND (auth.uid()::text) = (storage.foldername(name))[1]);
+
+CREATE POLICY "Owners can select from listing-images" ON storage.objects FOR SELECT TO public USING (bucket_id = 'listing-images' AND (auth.uid()::text) = (storage.foldername(name))[1]);
+
+CREATE POLICY "Owners can update in listing-images" ON storage.objects FOR UPDATE TO public USING (bucket_id = 'listing-images' AND (auth.uid()::text) = (storage.foldername(name))[1]);
+
+CREATE POLICY "Owners can delete from listing-images" ON storage.objects FOR DELETE TO public USING (bucket_id = 'listing-images' AND (auth.uid()::text) = (storage.foldername(name))[1]);
