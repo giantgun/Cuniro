@@ -108,7 +108,7 @@ This demo enforces escrow logic on-chain using the EscrowManager smart contract 
 ├── public/                # Static assets
 ├── styles/                # Global styles
 ```
-## Supabase Setup (Details)
+## Supabase Setup
 
 Follow these steps to create and configure a Supabase project for this app.
 
