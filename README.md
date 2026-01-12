@@ -265,7 +265,7 @@ Notes & recommendations:
 
 For the full table definitions, see: `supabase/sql/tables.sql` (this README summarizes the current schema).
 
-### Entity diagram (Mermaid)
+### Entity diagram
 
 ```mermaid
 erDiagram
