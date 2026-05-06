@@ -1,5 +1,18 @@
 # Cuniro
 
+🎥 **Demo Video:**  
+<br/>
+<br/>
+<div align="center">
+  <a href="https://youtu.be/HXsiokSswTQ">
+    <img src="https://img.youtube.com/vi/HXsiokSswTQ/maxresdefault.jpg" alt="BareBtc Demo" width="90%" />
+  </a>
+</div>
+<br/>
+<br/>
+
+---
+
 Student-focused rental marketplace & escrow platform using MNEE stablecoin (demo).
 
 Cuniro implements the EscrowManager smart contract [goto EscrowManager->](https://github.com/giantgun/EscrowManager) and uses the MNEE USD‑backed ERC‑20 stablecoin for listings and automated escrow flows. Using a stablecoin like MNEE provides price stability and enables programmable payments and financial automation, making commerce more predictable and simple.
